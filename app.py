@@ -64,17 +64,6 @@ def calcular_totales_cuadro():
 
 @app.route('/')
 def home():
-    # Esto cargará el index.html que guardamos dentro de /templates
-    return render_template('index.html')
-
-@app.route('/unifilar')
-def unifilar():
-    return render_template('unifilar.html')
-
-@app.route('/tierra')
-def tierra():
-    return render_template('tierra.html')
-def home():
     try:
         with open('index.html', 'r', encoding='utf-8') as f:
             html_content = f.read()
