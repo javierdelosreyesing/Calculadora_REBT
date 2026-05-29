@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consola Web REBT - Gestión de Cuadros Eléctricos</title>
+    <style>
+        :root {
+            --primary-color: #1b3a4b;
+            --secondary-color: #16a085;
+            --bg-color: #f5f7fb;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { background-color: var(--primary-color); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border-bottom: 4px solid var(--secondary-color); }
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background-color: var(--card-bg); border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .card h2 { font-size: 18px; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 4px; cursor: pointer; color: white; text-align: center; text-decoration: none;}
+        .btn-primary { background-color: var(--secondary-color); }
+        .btn-success { background-color: #2980b9; }
+        .btn-danger { background-color: var(--danger-color); }
+        
+        .btn-action { padding: 6px 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; color: white; margin: 0 2px; }
+        .btn-edit { background-color: var(--warning-color); }
+        .btn-delete { background-color: var(--danger-color); }
+
+        .resultado-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f2f6; font-size: 14px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; color: white; }
+        .badge-success { background-color: var(--success-color); }
+        .badge-danger { background-color: var(--danger-color); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background-color: var(--primary-color); color: white; padding: 10px; text-align: center; }
+        td { padding: 10px; border: 1px solid var(--border-color); text-align: center; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        
+        .totales-box { display: flex; justify-content: space-around; background: #fff2cc; padding: 15px; margin-top: 15px; border-radius: 6px; font-weight: bold; border-left: 5px solid #c0392b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Consola Web Avanzada REBT</h1>
+        <p>Estudio de Cargas y Generación de Memorias Técnicas de Diseño</p>
+    </header>
+
+    <div class="main-layout">
+        <div class="card">
+            <h2 id="form-title">Configuración Manual de la Línea</h2>
+            <form id="form-rebt">
+                <input type="hidden" id="edit_index" value="-1">
+                
+                <div class="form-group">
+                    <label>Identificación de la Línea / Circuito:</label>
+                    <input type="text" id="circuito_id" class="form-control" value="C1 - ILUMINACIÓN">
+                </div>
+                <div class="form-group">
+                    <label>Potencia de Cálculo (W):</label>
+                    <input type="number" id="potencia" class="form-control" value="2300">
+                </div>
+                <div class="form-group">
+                    <label>Longitud Proyectada (m):</label>
+                    <input type="number" id="longitud" class="form-control" value="20">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Red Eléctrica:</label>
+                    <select id="sistema" class="form-control">
+                        <option value="Monofásico" selected>Monofásico [230V]</option>
+                        <option value="Trifásico">Trifásico [400V]</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sección del Conductor (mm²):</label>
+                    <select id="seccion" class="form-control">
+                        <option value="1.5" selected>1.5 mm²</option>
+                        <option value="2.5">2.5 mm²</option>
+                        <option value="4">4.0 mm²</option>
+                        <option value="6">6.0 mm²</option>
+                        <option value="10">10.0 mm²</option>
+                        <option value="16">16.0 mm²</option>
+						<option value="25">25.0 mm²</option>
+						<option value="35">35.0 mm²</option>
+						<option value="50">50.0 mm²</option>
+						
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Calibre Disyuntor PIA (A):</label>
+                    <select id="magneto" class="form-control">
+                        <option value="10" selected>10 A</option>
+                        <option value="16">16 A</option>
+                        <option value="20">20 A</option>
+                        <option value="25">25 A</option>
+                        <option value="32">32 A</option>
+						<option value="40">40 A</option>
+						<option value="63">63 A</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Límite Máximo Caída de Tensión Admisible (ΔU %):</label>
+                    <select id="limite_cdt" class="form-control">
+                        <option value="3.0" selected>3.0% (Líneas de alumbrado interior)</option>
+                        <option value="5.0">5.0% (Líneas de fuerza / otros usos)</option>
+                        <option value="1.5">1.5% (Derivaciones individuales contadores)</option>
+                        <option value="1.0">1.0% (Línea general de alimentación)</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="procesarLinea(false)">Validar Parámetros</button>
+                    <button type="button" class="btn btn-success" id="btn-save" onclick="procesarLinea(true)">Añadir al Cuadro ➕</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Diagnóstico Técnico de Seguridad</h2>
+            <div class="resultado-item"><span>Intensidad de Diseño (Ib):</span><span id="res-ib" class="badge" style="background:#7f8c8d">-</span></div>
+            <div class="resultado-item"><span>Caída de Tensión Final:</span><span id="res-cdt" class="badge" style="background:#7f8c8d">-</span></div>
+            <div class="resultado-item"><span>Capacidad del Cable (Iz):</span><span id="res-iz" class="badge" style="background:#7f8c8d">-</span></div>
+			<div class="resultado-item"><span>Diametro Canalizacion:</span><span id="res-tubo" class="badge" style="background:#7f8c8d">-</span></div>
+            <div class="resultado-item"><span>Protección Sobrecargas (Ib ≤ In ≤ Iz):</span><span id="badge-sobrecarga" class="badge" style="background:#7f8c8d">Inactivo</span></div>
+            <div class="resultado-item"><span>Protección Caída Tensión (Elección):</span><span id="badge-cdt" class="badge" style="background:#7f8c8d">Inactivo</span></div>
+            <button type="button" class="btn btn-danger" style="width:100%; margin-top:28px; background:#c0392b;" onclick="descargarPDF()">Generar Memoria Técnica PDF 📄</button>
+			<a href="/cortocircuito" class="btn" style="display:block; width:100%; margin-top:10px; background:#e67e22; text-decoration:none;">Ir al Módulo de Cortocircuito ⚡</a>
+			<a href="/unifilar" class="btn" style="display:block; width:100%; margin-top:10px; background:#3b82f6; text-decoration:none;">Ir al Módulo de Unifilares ⚡</a>
+			<a href="/tierra" class="btn" style="display:block; width:100%; margin-top:10px; background:#3b82f6; text-decoration:none;">⚡ Calcular Puesta a Tierra ⚡</a>
+			
+    
+</a>
+</a>
+</a>
+			<button type="button" class="btn btn-danger" style="width:100%; margin-top:28px; background-color: var(--danger-color); color: white;" onclick="vaciarCuadroCompleto()">🗑️ Vaciar Cuadro Completo 📄</button>
+			
+    
+</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Líneas Integradas en el Cuadro General de Distribución</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Circuito</th>
+                    <th>Potencia</th>
+                    <th>Longitud</th>
+                    <th>Red</th>
+                    <th>Ib (A)</th>
+                    <th>PIA (A)</th>
+                    <th>Sección</th>
+                    <th>Iz (A)</th>
+                    <th>ΔU Obs / Lím</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-circuitos-body">
+                <tr><td colspan="10" style="color:#7f8c8d;">Ninguna línea añadida al cuadro. Usa "Añadir al Cuadro".</td></tr>
+            </tbody>
+        </table>
+        
+        <div class="totales-box">
+            <div>Potencia Total Instalada: <span id="tot-instalada" style="color:#c0392b">0 W</span></div>
+            <div>Potencia Coincidente (ITC-BT-25): <span id="tot-coincidente" style="color:#1b3a4b">0 W</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let circuitosLocales = [];
+
+    function procesarLinea(guardarEnCuadro) {
+        const editIndex = parseInt(document.getElementById('edit_index').value);
+        
+        const payload = {
+            id: document.getElementById('circuito_id').value,
+            potencia: parseFloat(document.getElementById('potencia').value),
+            longitud: parseFloat(document.getElementById('longitud').value),
+            sistema: document.getElementById('sistema').value,
+            seccion: parseFloat(document.getElementById('seccion').value),
+            magneto: parseFloat(document.getElementById('magneto').value),
+            limite_cdt: parseFloat(document.getElementById('limite_cdt').value), // Enviado a Python
+            commit: guardarEnCuadro,
+            edit_index: editIndex
+        };
+
+        fetch('/calcular', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => { if (!res.ok) throw new Error('Error backend'); return res.json(); })
+        .then(data => {
+            if(data.status === "success") {
+                document.getElementById('res-ib').innerText = data.res.intensidad + " A";
+                document.getElementById('res-ib').style.background = "#2c3e50";
+                
+                document.getElementById('res-cdt').innerText = data.res.caida_porcentaje + " % / Lím: " + payload.limite_cdt + "%";
+                document.getElementById('res-cdt').style.background = "#2c3e50";
+                
+                document.getElementById('res-iz').innerText = data.res.iz_admisible + " A";
+                document.getElementById('res-iz').style.background = "#2c3e50";
+                
+				document.getElementById('res-tubo').innerText = data.res.tubo + " Ø";
+                document.getElementById('res-tubo').style.background = "#2c3e50";
+				
+                document.getElementById('badge-sobrecarga').innerText = data.res.cumple_sobrecarga === "SÍ" ? "CUMPLE (Ib ≤ In ≤ Iz)" : "FALLO CRÍTICO SECCIÓN";
+                document.getElementById('badge-sobrecarga').className = data.res.cumple_sobrecarga === "SÍ" ? "badge badge-success" : "badge badge-danger";
+                
+                document.getElementById('badge-cdt').innerText = data.res.cumple_cdt === "SÍ" ? "CUMPLE" : "EXCESO ΔU";
+                document.getElementById('badge-cdt').className = data.res.cumple_cdt === "SÍ" ? "badge badge-success" : "badge badge-danger";
+
+                if(guardarEnCuadro) {
+                    cancelarEdicion();
+                    renderizarTabla(data.cuadro, data.p_tot, data.p_coinc);
+                }
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function renderizarTabla(cuadro, pTot, pCoinc) {
+        circuitosLocales = cuadro; 
+        const body = document.getElementById('tabla-circuitos-body');
+        body.innerHTML = "";
+        
+        if (!cuadro || cuadro.length === 0) {
+            body.innerHTML = `<tr><td colspan="10" style="color:#7f8c8d;">Ninguna línea añadida al cuadro.</td></tr>`;
+            document.getElementById('tot-instalada').innerText = "0 W";
+            document.getElementById('tot-coincidente').innerText = "0 W";
+            return;
+        }
+        
+        cuadro.forEach((c, index) => {
+            body.innerHTML += `<tr>
+                <td><strong>${c.id}</strong></td>
+                <td>${c.potencia} W</td>
+                <td>${c.longitud} m</td>
+                <td>${c.sistema}</td>
+                <td>${c.res_calculados.intensidad} A</td>
+                <td><strong>${c.magneto} A</strong></td>
+                <td>${c.seccion} mm²</td>
+                <td>${c.res_calculados.iz_admisible} A</td>
+				<td>${c.res_calculados.tubo} A</td>
+                <td>${c.res_calculados.caida_porcentaje}% / <small>${c.limite_cdt}%</small></td>
+                <td>
+                    <button type="button" class="btn-action btn-edit" onclick="cargarEnFormulario(${index})">✏️ Editar</button>
+                    <button type="button" class="btn-action btn-delete" onclick="eliminarCircuito(${index})">❌ Borrar</button>
+                </td>
+            </tr>`;
+        });
+        
+        document.getElementById('tot-instalada').innerText = pTot.toLocaleString() + " W";
+        document.getElementById('tot-coincidente').innerText = pCoinc.toLocaleString() + " W";
+    }
+
+    function cargarEnFormulario(index) {
+        const c = circuitosLocales[index];
+        if(!c) return;
+
+        document.getElementById('edit_index').value = index;
+        document.getElementById('circuito_id').value = c.id;
+        document.getElementById('potencia').value = c.potencia;
+        document.getElementById('longitud').value = c.longitud;
+        document.getElementById('sistema').value = c.sistema;
+        document.getElementById('seccion').value = c.seccion;
+        document.getElementById('magneto').value = c.magneto;
+        document.getElementById('limite_cdt').value = c.limite_cdt;
+
+        document.getElementById('form-title').innerText = "📝 Editando Línea N° " + (index + 1);
+        document.getElementById('btn-save').innerText = "Guardar Cambios 💾";
+        document.getElementById('btn-save').style.backgroundColor = "var(--warning-color)";
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function cancelarEdicion() {
+        document.getElementById('edit_index').value = "-1";
+        document.getElementById('form-title').innerText = "Configuración Manual de la Línea";
+        document.getElementById('btn-save').innerText = "Añadir al Cuadro ➕";
+        document.getElementById('btn-save').style.backgroundColor = "var(--secondary-color)";
+        document.getElementById('form-rebt').reset();
+    }
+
+    function eliminarCircuito(index) {
+        if(!confirm("¿Deseas eliminar permanentemente esta línea eléctrica?")) return;
+        fetch('/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ index: parseInt(index) })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "success") {
+                cancelarEdicion();
+                renderizarTabla(data.cuadro, data.p_tot, data.p_coinc);
+            }
+        });
+    }
+
+    function descargarPDF() { window.location.href = "/descargar_reporte"; }
+	// 🔥 CARGA AUTOMÁTICA AL INICIAR LA PÁGINA
+document.addEventListener("DOMContentLoaded", () => {
+    // Realizamos una petición vacía (commit: false) para recuperar el estado global actual del servidor
+    fetch('/calcular', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commit: false })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success" && data.cuadro) {
+            // Pintamos la tabla con los datos que el servidor ya tiene guardados
+            renderizarTabla(data.cuadro, data.p_tot, data.p_coinc);
+        }
+    })
+    .catch(err => console.error("Error al sincronizar datos iniciales:", err));
+});
+
+function vaciarCuadroCompleto() {
+    if (!confirm("⚠️ ¿Estás completamente seguro de que deseas eliminar TODOS los circuitos del cuadro y del módulo de cortocircuitos? Esta acción no se puede deshacer.")) {
+        return;
+    }
+
+    fetch('/vaciar_cuadro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            cancelarEdicion(); // Limpia el formulario si se estaba editando algo
+            // Redibuja la tabla vacía y resetea los totales
+            renderizarTabla(data.cuadro, data.p_tot, data.p_coinc);
+            alert("El cuadro eléctrico ha sido vaciado por completo.");
+        } else {
+            alert("Error al vaciar el cuadro: " + data.message);
+        }
+    })
+    .catch(err => console.error("Error de conexión:", err));
+}
+</script>
+</body>
+</html>

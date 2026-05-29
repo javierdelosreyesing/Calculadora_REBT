@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>⚡ Cálculo Avanzado de Puesta a Tierra - REBT</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #0f766e;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--primary);
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .step-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 2px solid #ccfbf1;
+            padding-bottom: 6px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        select:focus, input:focus {
+            outline: 2px solid var(--accent);
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .input-row div {
+            flex: 1;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #2563eb; }
+        .btn-back { background: #64748b; box-shadow: none; }
+        .btn-back:hover { background: #475569; }
+        
+        /* Caja de Resultados */
+        .results-panel {
+            background: #ffffff;
+            border-top: 4px solid var(--accent);
+        }
+        .metric-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        .metric-box {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .metric-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        
+        .formula-box {
+            background: #fafafa;
+            border-left: 4px solid #94a3b8;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #334155;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <div class="header">
+        <div>
+            <h1 style="margin:0; font-size:22px;">⚡ Memoria de Cálculo de Puesta a Tierra</h1>
+            <p style="margin:4px 0 0 0; font-size:13px; color:#94a3b8;">Procedimiento Justificativo de Resistencia Óhmica — MTD Módulo Tierras</p>
+        </div>
+        <button onclick="window.location.href='/'" class="btn btn-back">⬅️ Volver al Cuadro</button>
+    </div>
+
+    <div class="grid-layout">
+        
+        <div>
+            <div class="card">
+                <h3 class="step-title">🏢 PASO 1: Geometría del Edificio (Bucle de Tierra)</h3>
+                <div class="form-group">
+                    <label>Tipo de Edificación:</label>
+                    <select id="tipo-edificio" onchange="ajustarGeometriaPredeterminada()">
+                        <option value="vivienda" selected>Vivienda Unifamiliar / Edificio Pequeño</option>
+                        <option value="bloque">Bloque de Viviendas Mediano</option>
+                        <option value="industrial">Nave Industrial / Gran Superficie</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dimensiones de la Planta de Cimentación:</label>
+                    <div class="input-row">
+                        <div>
+                            <label style="font-weight:normal; font-size:11px;">Largo (m)</label>
+                            <input type="number" id="edificio-largo" value="15" min="1" oninput="calcularTodo()">
+                        </div>
+                        <div>
+                            <label style="font-weight:normal; font-size:11px;">Ancho (m)</label>
+                            <input type="number" id="edificio-ancho" value="10" min="1" oninput="calcularTodo()">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Longitud resultante del conductor enterrado ($L_c$):</label>
+                    <input type="text" id="longitud-conductor-vista" readonly style="background:#f1f5f9; font-weight:bold; color:var(--accent);">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="step-title">📍 PASO 2: Electrodos Verticales (Picas Complementarias)</h3>
+                <div class="form-group">
+                    <label>Instalar Picas Verticales de Apoyo:</label>
+                    <select id="usa-picas" onchange="conmutarPicas()">
+                        <option value="si" selected>Sí (Recomendado para asegurar continuidad)</option>
+                        <option value="no">No, solo cable horizontal</option>
+                    </select>
+                </div>
+                <div id="panel-picas">
+                    <div class="form-group">
+                        <label>Número de Picas instaladas en paralelo ($N$):</label>
+                        <input type="number" id="num-picas" value="2" min="1" oninput="calcularTodo()">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Longitud comercial de cada Pica ($L_p$):</label>
+                        <select id="longitud-pica" onchange="calcularTodo()">
+                            <option value="1.5">1.5 metros</option>
+                            <option value="2.0" selected>2.0 metros</option>
+                            <option value="2.5">2.5 metros</option>
+                            <option value="3.0">3.0 metros</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h3 class="step-title">🌱 PASO 3: Naturaleza del Terreno e Instalación</h3>
+                <div class="form-group">
+                    <label>Tipo de Terreno / Parámetro de Conductividad:</label>
+                    <select id="tipo-terreno" onchange="actualizarResistividadManual()">
+                        <option value="50" selected>Tierras de cultivo, arcillas compactas (50 Ω·m)</option>
+                        <option value="100">Terrenos arcillo-arenosos, sílices (100 Ω·m)</option>
+                        <option value="500">Suelos calcáreos, arenas gruesas, gravas (500 Ω·m)</option>
+                        <option value="1500">Terrenos rocosos, granito descascarillado (1500 Ω·m)</option>
+                        <option value="manual">Personalizado / Medido con telurómetro...</option>
+                    </select>
+                </div>
+                <div class="form-group" id="grupo-resistividad-manual" style="display:none;">
+                    <label>Resistividad del terreno estimada ($\rho$ en Ω·m):</label>
+                    <input type="number" id="resistividad-valor" value="50" min="1" oninput="calcularTodo()">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Límite Normativo Máximo Exigible ($R_{max}$):</label>
+                    <select id="limite-resistencia" onchange="calcularTodo()">
+                        <option value="15">R &le; 15 Ω (Edificios con pararrayos)</option>
+                        <option value="20">R &le; 20 Ω (Criterio estricto de Media Tensión)</option>
+                        <option value="37" selected>R &le; 37 Ω (Instalación estándar / Viviendas REBT)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card results-panel">
+                <h3 class="step-title">📊 PASO 4: Resultados y Verificación REBT</h3>
+                
+                <div class="metric-container">
+                    <div class="metric-box">
+                        <label>Resistencia Total ($R_t$)</label>
+                        <div class="metric-val" id="res-tierra-total">0.00 Ω</div>
+                        <span id="badge-cumplimiento" class="badge">Validando...</span>
+                    </div>
+                </div>
+
+                <div style="font-size:12px; color:#475569; margin-bottom:5px;"><strong>Desglose por Elemento:</strong></div>
+                <div style="font-size:13px; padding-left:5px; margin-bottom:15px; border-left:3px solid #cbd5e1;">
+                    🌐 Resistencia Cable Enterrado ($R_c$): <span id="res-cable-calc" style="font-weight:bold;">0.00 Ω</span><br>
+                    📌 Resistencia Grupo Picas ($R_p$): <span id="res-picas-calc" style="font-weight:bold;">0.00 Ω</span>
+                </div>
+
+                <div style="font-size:12px; color:#475569;"><strong>Fórmulas aplicadas (Guía Técnica MIE-BT-18):</strong></div>
+                <div class="formula-box" id="desglose-formulas">
+                    Calculando coeficientes...
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function ajustarGeometriaPredeterminada() {
+        const tipo = document.getElementById('tipo-edificio').value;
+        if (tipo === 'vivienda') {
+            document.getElementById('edificio-largo').value = 15;
+            document.getElementById('edificio-ancho').value = 10;
+        } else if (tipo === 'bloque') {
+            document.getElementById('edificio-largo').value = 30;
+            document.getElementById('edificio-ancho').value = 18;
+        } else if (tipo === 'industrial') {
+            document.getElementById('edificio-largo').value = 50;
+            document.getElementById('edificio-ancho').value = 25;
+        }
+        calcularTodo();
+    }
+
+    function conmutarPicas() {
+        const usaPicas = document.getElementById('usa-picas').value;
+        document.getElementById('panel-picas').style.display = usaPicas === 'si' ? 'block' : 'none';
+        calcularTodo();
+    }
+
+    function actualizarResistividadManual() {
+        const select = document.getElementById('tipo-terreno');
+        const grupo = document.getElementById('grupo-resistividad-manual');
+        if (select.value === 'manual') {
+            grupo.style.display = 'block';
+        } else {
+            grupo.style.display = 'none';
+            document.getElementById('resistividad-valor').value = select.value;
+        }
+        calcularTodo();
+    }
+
+    function calcularTodo() {
+        // 1. Obtener Variables de entrada
+        const largo = parseFloat(document.getElementById('edificio-largo').value) || 0;
+        const ancho = parseFloat(document.getElementById('edificio-ancho').value) || 0;
+        const usaPicas = document.getElementById('usa-picas').value;
+        const numPicas = parseInt(document.getElementById('num-picas').value) || 1;
+        const lonPica = parseFloat(document.getElementById('longitud-pica').value) || 2;
+        const rho = parseFloat(document.getElementById('resistividad-valor').value) || 50;
+        const rMax = parseFloat(document.getElementById('limite-resistencia').value);
+
+        // 2. Calcular Longitud del Bucle Cerrado (Perímetro)
+        const lonConductor = (2 * largo) + (2 * ancho);
+        document.getElementById('longitud-conductor-vista').value = lonConductor + " metros lineales";
+
+        // 3. Fórmulas Oficiales del REBT
+        // Resistencia del conductor horizontal enterrado: R_c = 2 * rho / L_c
+        const Rc = (2 * rho) / lonConductor;
+
+        let Rp = 0;
+        let Rt = 0;
+        let formulaTexto = "";
+
+        if (usaPicas === 'si') {
+            // Resistencia de las picas verticales: R_p = rho / (N * L_p)
+            Rp = rho / (numPicas * lonPica);
+            // Combinación en paralelo de ambos sistemas acoplados
+            Rt = (Rc * Rp) / (Rc + Rp);
+            
+            formulaTexto = `• Rc = (2 * ρ) / Lc = (2 * ${rho}) / ${lonConductor} = ${Rc.toFixed(2)} Ω\n` +
+                           `• Rp = ρ / (N * Lp) = ${rho} / (${numPicas} * ${lonPica}) = ${Rp.toFixed(2)} Ω\n` +
+                           `• Rt = (Rc * Rp) / (Rc + Rp) = Puesta a Tierra equivalente final.`;
+        } else {
+            Rt = Rc;
+            formulaTexto = `• Rt = Rc = (2 * ρ) / Lc = (2 * ${rho}) / ${lonConductor} = ${Rc.toFixed(2)} Ω\n` +
+                           `• (Sistema configurado únicamente con bucle horizontal, sin picas).`;
+        }
+
+        // 4. Pintar Resultados en la interfaz
+        document.getElementById('res-tierra-total').innerText = Rt.toFixed(2) + " Ω";
+        document.getElementById('res-cable-calc').innerText = Rc.toFixed(2) + " Ω";
+        document.getElementById('res-picas-calc').innerText = usaPicas === 'si' ? Rp.toFixed(2) + " Ω" : "N/A";
+        document.getElementById('desglose-formulas').innerText = formulaTexto;
+
+        // 5. Validar si cumple el corte normativo
+        const badge = document.getElementById('badge-cumplimiento');
+        if (Rt <= rMax) {
+            badge.innerText = `✔ CUMPLE REBT (Menor a ${rMax} Ω)`;
+            badge.className = "badge badge-success";
+        } else {
+            badge.innerText = `⚠ NO CUMPLE (Supera los ${rMax} Ω establecidos)`;
+            badge.className = "badge badge-danger";
+        }
+    }
+
+    // Inicialización automática al arrancar la ventana
+    window.onload = function() {
+        actualizarResistividadManual();
+    };
+</script>
+</body>
+</html>
+
+
+
+

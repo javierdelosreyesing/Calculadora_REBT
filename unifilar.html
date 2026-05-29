@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador Unifilar Avanzado - REBT</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #0f766e;
+            --line-color: #334155;
+            --bg: #f8fafc;
+            --pia-bg: #ffffff;
+            --pia-border: #475569;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --di-color: #2563eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container { max-width: 100%; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #475569;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover { background: #334155; }
+        .btn-accent { background: var(--accent); }
+        .btn-accent:hover { background: #0d615a; }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel-config {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .panel-config h3 { margin-top: 18px; color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;}
+        .panel-config h3:first-child { margin-top: 0; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #475569;}
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box;}
+
+        .lista-items {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            padding: 5px;
+            background: #f8fafc;
+            border-radius: 4px;
+        }
+
+        .item-row {
+            background: white;
+            padding: 8px;
+            margin-bottom: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .btn-mini {
+            padding: 3px 6px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            margin-left: 2px;
+        }
+        .btn-edit { background-color: var(--warning); }
+        .btn-del { background-color: var(--danger); }
+
+        .order-btns button {
+            padding: 2px 5px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* --- LIENZO DEL UNIFILAR --- */
+        .unifilar-scroll-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            padding: 40px;
+        }
+
+        .unifilar-canvas {
+            min-width: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Caja de la Derivación Individual */
+        .acometida {
+            border: 2px solid var(--di-color);
+            padding: 12px 25px;
+            font-weight: bold;
+            background: #eff6ff;
+            text-align: center;
+            font-size: 13px;
+            border-radius: 6px;
+            position: relative;
+            min-width: 240px;
+            box-shadow: 0 2px 4px rgba(37,99,235,0.08);
+        }
+
+        .acometida::after {
+            content: ''; position: absolute; bottom: -30px; left: 50%;
+            width: 2px; height: 30px; background: var(--line-color);
+        }
+
+        .iga-box {
+            margin-top: 30px;
+            border: 2px solid var(--line-color);
+            background: white;
+            padding: 8px 20px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            position: relative;
+            min-width: 180px;
+        }
+
+        .iga-box::after {
+            content: ''; position: absolute; bottom: -25px; left: 50%;
+            width: 2px; height: 25px; background: var(--line-color);
+        }
+
+        .embarrado-principal {
+            display: flex; 
+            justify-content: center;
+            align-items: flex-start;
+            gap: 60px;
+            margin-top: 25px; 
+            position: relative;
+            padding-top: 4px;
+        }
+
+        .embarrado-principal::before {
+            content: ''; position: absolute; top: 0; left: 10%; width: 80%; height: 4px; background: var(--line-color);
+        }
+
+        .bloque-diferencial {
+            display: flex; flex-direction: column; align-items: center; position: relative; padding-top: 30px;
+        }
+
+        .bloque-diferencial::before {
+            content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 30px; background: var(--line-color);
+        }
+
+        .id-caja {
+            display: flex; align-items: center; gap: 15px; border: 2px solid var(--line-color); background: var(--pia-bg);
+            padding: 12px 20px; border-radius: 6px; text-align: left; font-size: 12px; min-width: 290px; position: relative; z-index: 2;
+        }
+
+        .id-caja::after {
+            content: ''; position: absolute; bottom: -20px; left: 50%; width: 2px; height: 20px; background: var(--line-color);
+        }
+
+        .subembarrado {
+            margin-top: 20px; margin-bottom: 25px; display: flex; justify-content: center; gap: 30px; padding: 4px 20px 0 20px; position: relative;
+        }
+
+        .subembarrado::before {
+            content: ''; position: absolute; top: 0; left: 45px; right: 45px; height: 4px; background: var(--line-color);
+        }
+
+        .columna-circuito {
+            display: flex; flex-direction: column; align-items: center; width: 200px; position: relative; padding-top: 20px;
+        }
+
+        .columna-circuito::before {
+            content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 20px; background: var(--line-color);
+        }
+
+        .pia-dispositivo {
+            display: flex; align-items: center; gap: 12px; border: 2px solid var(--pia-border); background-color: var(--pia-bg);
+            padding: 10px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; text-align: left; width: 100%; box-sizing: border-box; z-index: 2;
+        }
+
+        .cable-bajada { width: 2px; height: 15px; background: var(--line-color); }
+
+        .bloque-informacion {
+            border: 1px solid #cbd5e1; border-top: 4px solid var(--accent); background: white; padding: 12px; border-radius: 6px;
+            font-size: 11px; text-align: left; width: 100%; box-sizing: border-box; box-shadow: 0 3px 6px -1px rgb(0 0 0 / 0.03);
+        }
+
+        .bloque-informacion .titulo-c {
+            font-weight: bold; color: var(--primary); border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 6px; text-transform: uppercase; text-align: center; font-size: 12px;
+        }
+        
+        .bloque-informacion div { padding: 2.5px 0; color: #475569; display: flex; justify-content: space-between; }
+        .bloque-informacion div strong { color: #0f172a; }
+        .icono-esquema-tecnico { width: 45px; height: 55px; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+ <div class="header">
+    <div>
+        <h1 style="margin:0; font-size:22px;">📊 Configurador Unifilar Avanzado</h1>
+        <p style="margin:4px 0 0 0; font-size:13px; color:#94a3b8;">Derivación Individual, Parámetros Generales y Esquema Eléctrico</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="exportarPDF()" class="btn btn-accent">📄 Exportar Memoria PDF</button>
+        <a href="/" class="btn">⬅️ Volver a Conductores</a>
+    </div>
+</div>
+
+    <div class="workspace">
+        
+        <div class="panel-config">
+            
+            <h3>🔌 Configurar Derivación Individual</h3>
+            <div style="background:#f0f4f8; padding:12px; border:1px solid #d9e2ec; border-radius:6px; margin-bottom:15px;">
+                <div class="form-group">
+                    <label>Material del Conductor:</label>
+                    <select id="di-material" onchange="actualizarDI()">
+                        <option value="Cu" selected>Cobre (Cu)</option>
+                        <option value="Al">Aluminio (Al)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sección Nominal:</label>
+                    <select id="di-seccion" onchange="actualizarDI()">
+                        <option value="6">6 mm²</option>
+                        <option value="10" selected>10 mm²</option>
+                        <option value="16">16 mm²</option>
+                        <option value="25">25 mm²</option>
+                        <option value="35">35 mm²</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Longitud de la Línea (m):</label>
+                    <input type="number" id="di-longitud" value="15" min="1" step="0.5" oninput="actualizarDI()">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Tipo de Suministro:</label>
+                    <select id="di-sistema" onchange="actualizarDI()">
+                        <option value="monofasico" selected>Monofásico (230 V)</option>
+                        <option value="trifasico">Trifásico (400 V)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <h3>🛠️ 1. Configurar IGA General</h3>
+            <div style="background:#f8fafc; padding:12px; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:15px;">
+                <div class="form-group">
+                    <label>Calibre del IGA (In):</label>
+                    <select id="iga-calibre" onchange="actualizarIGA()">
+                        <option value="25A">25 A</option>
+                        <option value="32A">32 A</option>
+                        <option value="40A" selected>40 A (Estándar)</option>
+                        <option value="50A">50 A</option>
+                        <option value="63A">63 A</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Poder de Corte IGA:</label>
+                    <select id="iga-cortocircuito" onchange="actualizarIGA()">
+                        <option value="4.5 kA">4,5 kA</option>
+                        <option value="6 kA">6 kA</option>
+                        <option value="10 kA" selected>10 kA (Recomendado)</option>
+                        <option value="15 kA">15 kA</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 id="form-id-title">⚙️ 2. Añadir Diferencial</h3>
+            <form id="form-id" onsubmit="procesarDiferencial(event)" style="margin-bottom: 15px;">
+                <input type="hidden" id="edit-id-idx" value="-1">
+                <div class="form-group">
+                    <label>Nombre del Diferencial:</label>
+                    <input type="text" id="id-nombre" placeholder="Ej. ID 2 - Cocina" required>
+                </div>
+                <div class="form-group">
+                    <label>Sensibilidad / Calibre:</label>
+                    <select id="id-valores">
+                        <option value="40A / 30mA">40A / 30mA (Estándar)</option>
+                        <option value="25A / 30mA">25A / 30mA</option>
+                        <option value="63A / 30mA">63A / 30mA</option>
+                        <option value="40A / 300mA">40A / 300mA</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button type="submit" id="btn-id-submit" class="btn btn-accent" style="flex:1; padding:6px;">➕ Añadir</button>
+                    <button type="button" id="btn-id-cancel" onclick="cancelarEdicionID()" class="btn" style="padding:6px; background:#94a3b8; display:none;">Cancelar</button>
+                </div>
+            </form>
+
+            <h3>📋 Listado de Diferenciales</h3>
+            <div class="lista-items" id="lista-gestion-ids"></div>
+
+            <h3>🔄 3. Disposición y Asociación</h3>
+            <div class="lista-items" id="lista-gestion-circuitos"></div>
+        </div>
+
+        <div class="unifilar-scroll-container">
+            <div class="unifilar-canvas">
+                
+                <div class="acometida" id="plano-di-bloque">
+                    🔌 DERIVACIÓN INDIVIDUAL <br>
+                    <span style="font-size:11px; font-weight:normal;">Calculando parámetros...</span>
+                </div>
+
+                <div class="iga-box" id="plano-iga-bloque">
+                    <strong style="color:#b91c1c;">IGA 40A</strong><br>
+                    <span style="font-size:10px; color:#64748b;">Poder de Corte: 10 kA</span>
+                </div>
+
+                <div class="embarrado-principal" id="esquema-unifilar-dinamico"></div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const SIMBOLO_DIFERENCIAL_SVG = `
+        <svg class="icono-esquema-tecnico" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="25" y1="0" x2="25" y2="70" stroke="#334155" stroke-width="2" />
+            <line x1="25" y1="15" x2="13" y2="30" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="25" cy="42" r="9" stroke="#6d28d9" stroke-width="2" fill="white"/>
+            <path d="M16 42H10V24H18" stroke="#ef4444" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+            <rect x="7" y="40" width="6" height="5" fill="#ef4444"/>
+        </svg>
+    `;
+
+    const SIMBOLO_MAGNETOTERMICO_SVG = `
+        <svg class="icono-esquema-tecnico" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="25" y1="0" x2="25" y2="70" stroke="#334155" stroke-width="2" />
+            <line x1="25" y1="18" x2="12" y2="35" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M25 45 C15 45, 15 52, 25 52" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M25 52 L17 52 L17 58 L25 58" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+    `;
+
+    // Variables de estado iniciales
+    let diferenciales = JSON.parse(localStorage.getItem('unifilar_diferenciales')) || [
+        { id: "id_gen", nombre: "ID 1 - General", valores: "40A / 30mA" }
+    ];
+    let configIGA = JSON.parse(localStorage.getItem('unifilar_iga')) || { calibre: "40A", poderCorte: "10 kA" };
+    
+    // Configuración por defecto de la Derivación Individual
+    let configDI = JSON.parse(localStorage.getItem('unifilar_di')) || {
+        material: "Cu",
+        seccion: "10",
+        longitud: "15",
+        sistema: "monofasico"
+    };
+
+    let ordenCircuitos = [];
+    let potenciaTotalCuadro = 0; // Para el cálculo de la CDT de la DI
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!localStorage.getItem('unifilar_diferenciales')) localStorage.setItem('unifilar_diferenciales', JSON.stringify(diferenciales));
+        if (!localStorage.getItem('unifilar_iga')) localStorage.setItem('unifilar_iga', JSON.stringify(configIGA));
+        if (!localStorage.getItem('unifilar_di')) localStorage.setItem('unifilar_di', JSON.stringify(configDI));
+        
+        // Cargar inputs
+        document.getElementById('iga-calibre').value = configIGA.calibre;
+        document.getElementById('iga-cortocircuito').value = configIGA.poderCorte;
+        
+        document.getElementById('di-material').value = configDI.material;
+        document.getElementById('di-seccion').value = configDI.seccion;
+        document.getElementById('di-longitud').value = configDI.longitud;
+        document.getElementById('di-sistema').value = configDI.sistema;
+
+        cargarDatosOriginales();
+    });
+
+    function cargarDatosOriginales() {
+        fetch('/calcular', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ commit: false })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success" && data.cuadro) {
+                potenciaTotalCuadro = data.p_coinc || 0; // Usamos potencia coincidente del REBT
+                sincronizarOrden(data.cuadro);
+                renderizarControlesID();
+                renderizarControlesCircuitos();
+                pintarIGAPlano();
+                actualizarDI(); // Calcula e imprime la DI en pantalla
+                construirUnifilarGrafico();
+            }
+        });
+    }
+
+    // LÓGICA DE CÁLCULO DE LA DERIVACIÓN INDIVIDUAL (ITC-BT-15)
+    function actualizarDI() {
+        configDI.material = document.getElementById('di-material').value;
+        configDI.seccion = parseFloat(document.getElementById('di-seccion').value);
+        configDI.longitud = parseFloat(document.getElementById('di-longitud').value) || 0;
+        configDI.sistema = document.getElementById('di-sistema').value;
+        localStorage.setItem('unifilar_di', JSON.stringify(configDI));
+
+        // Constantes físicas del REBT para cables termoestables a 90°C (Servicio permanente)
+        const cond = configDI.material === "Cu" ? 48.47 : 29.56; 
+        const tension = configDI.sistema === "monofasico" ? 230 : 400;
+        
+        // Caída de tensión en porcentaje
+        let cdt = 0;
+        if (configDI.sistema === "monofasico") {
+            cdt = (2 * potenciaTotalCuadro * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
+        } else {
+            cdt = (potenciaTotalCuadro * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
+        }
+        cdt = cdt * 100;
+
+        // Límite legal REBT para DI: Contador único = 1.5%, Contadores centralizados = 1.0%
+        const limiteDI = 1.0; 
+        const cumpleCDT = cdt <= limiteDI ? `<span style="color:#0f766e;">✔ Cumple</span>` : `<span style="color:#ef4444;">❌ Excede REBT</span>`;
+
+        const cajaDI = document.getElementById('plano-di-bloque');
+        cajaDI.innerHTML = `
+            <span style="color:var(--di-color); font-size:11px; letter-spacing:0.5px; display:block; margin-bottom:2px;">⚡ DERIVACIÓN INDIVIDUAL (ITC-BT-15)</span>
+            <strong>Línea de ${configDI.material} - ${configDI.seccion} mm²</strong><br>
+            <span style="font-size:11px; font-weight:normal; color:#475569;">
+                Longitud: ${configDI.longitud}m | ΔU: <strong>${cdt.toFixed(2)}%</strong> (${cumpleCDT})
+            </span>
+        `;
+    }
+
+    function actualizarIGA() {
+        configIGA.calibre = document.getElementById('iga-calibre').value;
+        configIGA.poderCorte = document.getElementById('iga-cortocircuito').value;
+        localStorage.setItem('unifilar_iga', JSON.stringify(configIGA));
+        pintarIGAPlano();
+    }
+
+    function pintarIGAPlano() {
+        const cajaIGA = document.getElementById('plano-iga-bloque');
+        cajaIGA.innerHTML = `
+            <strong style="color:#b91c1c;">IGA ${configIGA.calibre}</strong><br>
+            <span style="font-size:10px; color:#64748b;">Poder de Corte: ${configIGA.poderCorte}</span>
+        `;
+    }
+
+    function sincronizarOrden(cuadroServidor) {
+        let mapaExistente = JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {};
+        ordenCircuitos = cuadroServidor.map(c => {
+            let idAsignado = mapaExistente[c.id];
+            let existeID = diferenciales.some(d => d.id === idAsignado);
+            if (!idAsignado || !existeID) idAsignado = diferenciales[0].id;
+            return { ...c, diferencialAsignado: idAsignado };
+        });
+        guardarEstadoLocal();
+    }
+
+    function guardarEstadoLocal() {
+        localStorage.setItem('unifilar_diferenciales', JSON.stringify(diferenciales));
+        let mapaGuardar = {};
+        ordenCircuitos.forEach(c => { mapaGuardar[c.id] = c.diferencialAsignado; });
+        localStorage.setItem('unifilar_mapeo_circuitos', JSON.stringify(mapaGuardar));
+    }
+
+    function procesarDiferencial(e) {
+        e.preventDefault();
+        const nombre = document.getElementById('id-nombre').value;
+        const valores = document.getElementById('id-valores').value;
+        const editIdx = parseInt(document.getElementById('edit-id-idx').value);
+
+        if (editIdx === -1) {
+            diferenciales.push({ id: "id_" + Date.now(), nombre: nombre, valores: valores });
+        } else {
+            diferenciales[editIdx].nombre = nombre;
+            diferenciales[editIdx].valores = valores;
+        }
+        guardarEstadoLocal();
+        cancelarEdicionID();
+        renderizarControlesID();
+        renderizarControlesCircuitos();
+        construirUnifilarGrafico();
+    }
+
+    function editarID(index) {
+        const d = diferenciales[index];
+        document.getElementById('edit-id-idx').value = index;
+        document.getElementById('id-nombre').value = d.nombre;
+        document.getElementById('id-valores').value = d.valores;
+        document.getElementById('form-id-title').innerText = "📝 Editando Diferencial";
+        document.getElementById('btn-id-submit').innerText = "Guardar 💾";
+        document.getElementById('btn-id-cancel').style.display = "inline-block";
+    }
+
+    function eliminarID(index) {
+        if (diferenciales.length <= 1) { alert("⚠️ Se necesita al menos un diferencial."); return; }
+        if (!confirm(`¿Eliminar "${diferenciales[index].nombre}"?`)) return;
+        const idAEliminar = diferenciales[index].id;
+        diferenciales.splice(index, 1);
+        ordenCircuitos.forEach(c => { if (c.diferencialAsignado === idAEliminar) c.diferencialAsignado = diferenciales[0].id; });
+        guardarEstadoLocal();
+        cancelarEdicionID();
+        renderizarControlesID();
+        renderizarControlesCircuitos();
+        construirUnifilarGrafico();
+    }
+
+    function cancelarEdicionID() {
+        document.getElementById('form-id').reset();
+        document.getElementById('edit-id-idx').value = "-1";
+        document.getElementById('form-id-title').innerText = "⚙️ 2. Añadir Diferencial";
+        document.getElementById('btn-id-submit').innerText = "Añadir";
+        document.getElementById('btn-id-cancel').style.display = "none";
+    }
+
+    function renderizarControlesID() {
+        const contenedor = document.getElementById('lista-gestion-ids');
+        contenedor.innerHTML = "";
+        diferenciales.forEach((d, idx) => {
+            const div = document.createElement('div');
+            div.className = 'item-row';
+            div.innerHTML = `<div><strong>${d.nombre}</strong><br><span style="font-size:10px; color:#64748b;">${d.valores}</span></div>
+                             <div><button class="btn-mini btn-edit" onclick="editarID(${idx})">✏️</button><button class="btn-mini btn-del" onclick="eliminarID(${idx})">🗑️</button></div>`;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function renderizarControlesCircuitos() {
+        const contenedor = document.getElementById('lista-gestion-circuitos');
+        contenedor.innerHTML = "";
+        if (ordenCircuitos.length === 0) { contenedor.innerHTML = "<p style='font-size:12px; color:#64748b; text-align:center;'>Sin circuitos.</p>"; return; }
+        ordenCircuitos.forEach((c, idx) => {
+            const div = document.createElement('div');
+            div.className = 'item-row';
+            let opcionesDiferenciales = diferenciales.map(d => `<option value="${d.id}" ${c.diferencialAsignado === d.id ? 'selected' : ''}>${d.nombre}</option>`).join('');
+            div.innerHTML = `<div><strong>${c.id}</strong><div class="order-btns"><button onclick="moverPosicion(${idx}, -1)">🔼</button><button onclick="moverPosicion(${idx}, 1)">🔽</button></div></div>
+                             <div><select onchange="cambiarDiferencialCircuito('${c.id}', this.value)" style="font-size:11px; padding:4px;">${opcionesDiferenciales}</select></div>`;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function cambiarDiferencialCircuito(circuitoId, nuevoIdDiferencial) {
+        let c = ordenCircuitos.find(item => item.id === circuitoId);
+        if (c) { c.diferencialAsignado = nuevoIdDiferencial; guardarEstadoLocal(); construirUnifilarGrafico(); }
+    }
+
+    function moverPosicion(index, direccion) {
+        let nuevaPos = index + direccion;
+        if (nuevaPos >= 0 && nuevaPos < ordenCircuitos.length) {
+            let temp = ordenCircuitos[index]; ordenCircuitos[index] = ordenCircuitos[nuevaPos]; ordenCircuitos[nuevaPos] = temp;
+            renderizarControlesCircuitos(); construirUnifilarGrafico();
+        }
+    }
+
+    function construirUnifilarGrafico() {
+        const lienzo = document.getElementById('esquema-unifilar-dinamico');
+        lienzo.innerHTML = "";
+        let diferencialesActivos = diferenciales.filter(d => ordenCircuitos.some(c => c.diferencialAsignado === d.id));
+
+        diferencialesActivos.forEach(d => {
+            let hijos = ordenCircuitos.filter(c => c.diferencialAsignado === d.id);
+            const divDiferencial = document.createElement('div');
+            divDiferencial.className = 'bloque-diferencial';
+
+            let htmlBloque = `
+                <div class="id-caja">
+                    ${SIMBOLO_DIFERENCIAL_SVG}
+                    <div>
+                        <strong style="color:#0f172a; display:block; font-size:13px; text-transform:uppercase;">${d.nombre}</strong>
+                        <span style="font-size:11px; font-weight:700; color:#6d28d9; display:block; margin-top:2px;">Inter. Diferencial</span>
+                        <span style="font-size:11px; font-weight:600; color:#475569;">I<sub>n</sub>: ${d.valores}</span>
+                    </div>
+                </div>
+                <div class="subembarrado">
+            `;
+
+            hijos.forEach(h => {
+                let caida = h.res_calculados ? h.res_calculados.caida_porcentaje : '0.00';
+                htmlBloque += `
+                    <div class="columna-circuito">
+                        <div class="pia-dispositivo">
+                            ${SIMBOLO_MAGNETOTERMICO_SVG}
+                            <div>
+                                <strong style="display:block; color:#0f172a; font-size:13px;">PIA ${h.magneto}A</strong>
+                                <span style="font-size:10px; font-weight:700; color:#b45309; display:block;">Curva C</span>
+                                <span style="font-size:9px; font-weight:normal; color:#64748b; display:block;">I<sub>cn</sub>: 6 kA</span>
+                            </div>
+                        </div>
+                        <div class="cable-bajada"></div>
+                        <div class="bloque-informacion">
+                            <div class="titulo-c">${h.id}</div>
+                            <div><span>Potencia:</span> <strong>${h.potencia} W</strong></div>
+                            <div><span>Sección:</span> <strong>${h.seccion} mm²</strong></div>
+                            <div><span>Longitud:</span> <strong>${h.longitud} m</strong></div>
+                            <div style="color:#0f766e; margin-top:6px; font-weight:700; border-top:1px dashed #e2e8f0; padding-top:4px;">
+                                <span>ΔU (%):</span> <span>${caida}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlBloque += `</div>`;
+            divDiferencial.innerHTML = htmlBloque;
+            lienzo.appendChild(divDiferencial);
+        });
+    }
+	// AÑADE ESTA FUNCIÓN AL FINAL DE TU SCRIPT
+function exportarPDF() {
+    // Recopilamos el estado actual de la Derivación Individual e IGA
+    const datosEnvio = {
+        di: JSON.parse(localStorage.getItem('unifilar_di')) || configDI,
+        iga: JSON.parse(localStorage.getItem('unifilar_iga')) || configIGA,
+        diferenciales: diferenciales,
+        mapeo: JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {}
+    };
+
+    // Creamos un formulario temporal dinámico para hacer un POST directo y descargar el archivo binario
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/exportar_unifilar_pdf';
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'datos';
+    input.value = JSON.stringify(datosEnvio);
+    
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+</script>
+</body>
+</html>
