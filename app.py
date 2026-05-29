@@ -61,7 +61,6 @@ def calcular_totales_cuadro():
 # ==========================================
 # RUTAS DE LA VISTA 1: CUADRO GENERAL
 # ==========================================
-
 @app.route('/')
 def home():
     try:
