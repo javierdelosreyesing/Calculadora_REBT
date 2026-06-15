@@ -3,3 +3,5 @@ Flask-CORS==4.0.1
 WeasyPrint==61.2
 docxtpl==0.16.8
 Werkzeug==3.0.3
+flask-sqlalchemy
+flask-login
