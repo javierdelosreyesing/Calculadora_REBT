@@ -1,25 +1,25 @@
-# 1. Usamos una base de Ubuntu moderna, estable y con mejor soporte de librerías
-FROM ubuntu:22.04
+FROM python:3.11-slim
 
-# Avoid stuck build triggers (evita que se quede colgado pidiendo zona horaria)
-ENV DEBIAN_FRONTEND=noninteractive
-
-# 2. Actualizamos e instalamos Python y las dependencias de WeasyPrint correctas
+# Instalar dependencias del sistema requeridas para WeasyPrint (Generación de PDFs)
 RUN apt-get update && apt-get install -y \
-    python3 \
     python3-pip \
-    weasyprint \
-    && apt-get clean \
+    python3-cffi \
+    python3-brotli \
+    libpango-1.0-0 \
+    libharfbuzz0b \
+    libpangoft2-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Preparamos la carpeta de la aplicación dentro del servidor
 WORKDIR /app
 
-# 4. Instalamos Flask (WeasyPrint ya se instaló arriba con sus dependencias de Linux)
-RUN pip3 install --no-cache-dir Flask==3.0.2
+COPY . /app
 
-# 5. Copiamos todos tus archivos al servidor
-COPY . .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 6. Arrancamos tu servidor Flask usando python3
-CMD ["python3", "app.py"]
+# Render asigna el puerto dinámicamente mediante la variable PORT
+EXPOSE 10000
+
+CMD ["python", "app.py"]
