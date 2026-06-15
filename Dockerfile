@@ -1,29 +1,12 @@
-FROM python:3.11-slim
-
-USER root
-
-# 1. Instalar dependencias del sistema y herramientas de compilación (gcc)
-RUN apt-get clean && \
-    apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    python3-dev \
-    python3-cffi \
-    python3-brotli \
-    libpango-1.0-0 \
-    libharfbuzz0b \
-    libpangoft2-1.0-0 \
-    libgdk-pixbuf2.0-0 \
-    libffi-dev \
-    shared-mime-info \
-    && rm -rf /var/lib/apt/lists/*
+# 1. Usamos la imagen completa en lugar de la 'slim'. Ya tiene gcc y herramientas instaladas.
+FROM python:3.11
 
 WORKDIR /app
 
+# 2. Copiamos los archivos (Recuerda configurar el Root Directory en Render si están en subcarpeta)
 COPY . /app
 
-# 2. Actualizar pip e instalar las librerías fijas de requirements.txt
+# 3. Instalamos weasyprint de forma que maneje sus dependencias mediante Python directamente
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
