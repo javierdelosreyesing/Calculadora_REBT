@@ -1,23 +1,29 @@
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
-# 1. Instalar las dependencias de Weasyprint usando el gestor alpino (apk)
-RUN apk add --no-cache \
+USER root
+
+# 1. Instalar dependencias del sistema y herramientas de compilación (gcc)
+RUN apt-get clean && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
     gcc \
-    musl-dev \
-    jpeg-dev \
-    zlib-dev \
+    python3-dev \
+    python3-cffi \
+    python3-brotli \
+    libpango-1.0-0 \
+    libharfbuzz0b \
+    libpangoft2-1.0-0 \
+    libgdk-pixbuf2.0-0 \
     libffi-dev \
-    cairo-dev \
-    pango-dev \
-    gdk-pixbuf-dev \
     shared-mime-info \
-    ttf-dejavu
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY . /app
 
-# 2. Actualizar pip e instalar tus librerías
+# 2. Actualizar pip e instalar las librerías fijas de requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
