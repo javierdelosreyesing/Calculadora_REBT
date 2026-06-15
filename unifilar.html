@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurador Unifilar Avanzado - REBT</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Configurador Unifilar Avanzado - Estilo AutoCAD</title>
     <style>
         :root {
             --primary: #1e293b;
             --accent: #0f766e;
-            --line-color: #334155;
             --bg: #f8fafc;
-            --pia-bg: #ffffff;
-            --pia-border: #475569;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --di-color: #2563eb;
+            
+            /* Paleta AutoCAD Model Space */
+            --cad-bg: #14191e;
+            --cad-linea: #ffffff;
+            --cad-texto-attr: #ffff00; /* Amarillo */
+            --cad-texto-c: #00ffff;    /* Cian */
+            --cad-simbolo: #00ff00;   /* Verde */
         }
 
         body {
@@ -112,153 +116,91 @@
         .btn-edit { background-color: var(--warning); }
         .btn-del { background-color: var(--danger); }
 
-        .order-btns button {
-            padding: 2px 5px;
-            font-size: 10px;
-            cursor: pointer;
-        }
+        .order-btns { display: inline-flex; gap: 2px; margin-top: 4px; }
+        .order-btns button { padding: 2px 5px; font-size: 10px; cursor: pointer; }
 
-        /* --- LIENZO DEL UNIFILAR --- */
         .unifilar-scroll-container {
             overflow-x: auto;
-            background: white;
+            background: var(--cad-bg);
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            padding: 40px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            border: 3px solid #2e3842;
+            padding: 30px;
         }
 
-        .unifilar-canvas {
-            min-width: fit-content;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .unifilar-scroll-container.modo-impresion {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+            box-shadow: none !important;
         }
-
-        /* Caja de la Derivación Individual */
-        .acometida {
-            border: 2px solid var(--di-color);
-            padding: 12px 25px;
-            font-weight: bold;
-            background: #eff6ff;
-            text-align: center;
-            font-size: 13px;
-            border-radius: 6px;
-            position: relative;
-            min-width: 240px;
-            box-shadow: 0 2px 4px rgba(37,99,235,0.08);
-        }
-
-        .acometida::after {
-            content: ''; position: absolute; bottom: -30px; left: 50%;
-            width: 2px; height: 30px; background: var(--line-color);
-        }
-
-        .iga-box {
-            margin-top: 30px;
-            border: 2px solid var(--line-color);
-            background: white;
-            padding: 8px 20px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            position: relative;
-            min-width: 180px;
-        }
-
-        .iga-box::after {
-            content: ''; position: absolute; bottom: -25px; left: 50%;
-            width: 2px; height: 25px; background: var(--line-color);
-        }
-
-        .embarrado-principal {
-            display: flex; 
-            justify-content: center;
-            align-items: flex-start;
-            gap: 60px;
-            margin-top: 25px; 
-            position: relative;
-            padding-top: 4px;
-        }
-
-        .embarrado-principal::before {
-            content: ''; position: absolute; top: 0; left: 10%; width: 80%; height: 4px; background: var(--line-color);
-        }
-
-        .bloque-diferencial {
-            display: flex; flex-direction: column; align-items: center; position: relative; padding-top: 30px;
-        }
-
-        .bloque-diferencial::before {
-            content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 30px; background: var(--line-color);
-        }
-
-        .id-caja {
-            display: flex; align-items: center; gap: 15px; border: 2px solid var(--line-color); background: var(--pia-bg);
-            padding: 12px 20px; border-radius: 6px; text-align: left; font-size: 12px; min-width: 290px; position: relative; z-index: 2;
-        }
-
-        .id-caja::after {
-            content: ''; position: absolute; bottom: -20px; left: 50%; width: 2px; height: 20px; background: var(--line-color);
-        }
-
-        .subembarrado {
-            margin-top: 20px; margin-bottom: 25px; display: flex; justify-content: center; gap: 30px; padding: 4px 20px 0 20px; position: relative;
-        }
-
-        .subembarrado::before {
-            content: ''; position: absolute; top: 0; left: 45px; right: 45px; height: 4px; background: var(--line-color);
-        }
-
-        .columna-circuito {
-            display: flex; flex-direction: column; align-items: center; width: 200px; position: relative; padding-top: 20px;
-        }
-
-        .columna-circuito::before {
-            content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 20px; background: var(--line-color);
-        }
-
-        .pia-dispositivo {
-            display: flex; align-items: center; gap: 12px; border: 2px solid var(--pia-border); background-color: var(--pia-bg);
-            padding: 10px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; text-align: left; width: 100%; box-sizing: border-box; z-index: 2;
-        }
-
-        .cable-bajada { width: 2px; height: 15px; background: var(--line-color); }
-
-        .bloque-informacion {
-            border: 1px solid #cbd5e1; border-top: 4px solid var(--accent); background: white; padding: 12px; border-radius: 6px;
-            font-size: 11px; text-align: left; width: 100%; box-sizing: border-box; box-shadow: 0 3px 6px -1px rgb(0 0 0 / 0.03);
-        }
-
-        .bloque-informacion .titulo-c {
-            font-weight: bold; color: var(--primary); border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 6px; text-transform: uppercase; text-align: center; font-size: 12px;
-        }
-        
-        .bloque-informacion div { padding: 2.5px 0; color: #475569; display: flex; justify-content: space-between; }
-        .bloque-informacion div strong { color: #0f172a; }
-        .icono-esquema-tecnico { width: 45px; height: 55px; flex-shrink: 0; }
+		/* Estilos para el contenedor tipo acordeón */
+.panel-config h3 {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px;
+    margin-top: 10px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    border-bottom: none;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+.panel-config h3:hover {
+    background: #e2e8f0;
+}
+/* Icono indicador de despliegue */
+.panel-config h3::after {
+    content: '▼';
+    font-size: 10px;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+.panel-config h3.colapsado::after {
+    transform: rotate(-90deg);
+}
+/* Contenedor del contenido que se oculta/muestra */
+.bloque-colapsable {
+    transition: max-height 0.2s ease-out, opacity 0.2s ease-out, margin 0.2s ease;
+    overflow: hidden;
+    max-height: 1000px; /* Altura máxima estimada para que la animación funcione */
+    opacity: 1;
+}
+.bloque-colapsable.oculto {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    pointer-events: none;
+}
     </style>
 </head>
 <body>
 
 <div class="container">
- <div class="header">
-    <div>
-        <h1 style="margin:0; font-size:22px;">📊 Configurador Unifilar Avanzado</h1>
-        <p style="margin:4px 0 0 0; font-size:13px; color:#94a3b8;">Derivación Individual, Parámetros Generales y Esquema Eléctrico</p>
-    </div>
-    <div style="display: flex; gap: 10px;">
-        <button onclick="exportarPDF()" class="btn btn-accent">📄 Exportar Memoria PDF</button>
-        <a href="/" class="btn">⬅️ Volver a Conductores</a>
-    </div>
+    <div class="header">
+        <div>
+            <h1 style="margin:0; font-size:22px;">📊 Unifilar Pro Vectorial</h1>
+            <p style="margin:4px 0 0 0; font-size:13px; color:#94a3b8;">Renderizado dinámico de esquemas en entorno CAD industrial</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="conmutarModoImpresion()" class="btn" style="background:#0284c7;">👁️ Fondo Blanco/Negro</button>
+            <button onclick="exportarPDF()" class="btn btn-accent">📄 Exportar Memoria PDF</button>
+			<div class="acciones-plano" style="margin-bottom: 10px; display: flex; gap: 10px;">
+    <button type="button" onclick="exportarComoImagen()" class="btn" style="background: #0284c7; color: white;">🖼️ Exportar como Imagen (PNG)</button>
+    <button type="button" onclick="exportarComoPDF()" class="btn" style="background: #059669; color: white;">📄 Descargar Plano PDF</button>
 </div>
+            <a href="/calculos" class="btn">⬅️ Volver a Conductores</a>
+        </div>
+    </div>
 
     <div class="workspace">
         
-        <div class="panel-config">
-            
-            <h3>🔌 Configurar Derivación Individual</h3>
-            <div style="background:#f0f4f8; padding:12px; border:1px solid #d9e2ec; border-radius:6px; margin-bottom:15px;">
+       <div class="panel-config">
+            <h3 onclick="conmutarSeccion(this)">🔌 Configurar Derivación Individual</h3>
+            <div class="bloque-colapsable" style="background:#f0f4f8; padding:12px; border:1px solid #d9e2ec; border-radius:6px; margin-bottom:15px;">
                 <div class="form-group">
                     <label>Material del Conductor:</label>
                     <select id="di-material" onchange="actualizarDI()">
@@ -289,15 +231,15 @@
                 </div>
             </div>
             
-            <h3>🛠️ 1. Configurar IGA General</h3>
-            <div style="background:#f8fafc; padding:12px; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:15px;">
+            <h3 onclick="conmutarSeccion(this)">🛠️ 1. Configurar IGA General</h3>
+            <div class="bloque-colapsable" style="background:#f8fafc; padding:12px; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:15px;">
                 <div class="form-group">
                     <label>Calibre del IGA (In):</label>
                     <select id="iga-calibre" onchange="actualizarIGA()">
                         <option value="25A">25 A</option>
                         <option value="32A">32 A</option>
-                        <option value="40A" selected>40 A (Estándar)</option>
-                        <option value="50A">50 A</option>
+                        <option value="40A">40 A</option>
+                        <option value="50A" selected>50 A</option>
                         <option value="63A">63 A</option>
                     </select>
                 </div>
@@ -312,110 +254,137 @@
                 </div>
             </div>
 
-            <h3 id="form-id-title">⚙️ 2. Añadir Diferencial</h3>
-            <form id="form-id" onsubmit="procesarDiferencial(event)" style="margin-bottom: 15px;">
-                <input type="hidden" id="edit-id-idx" value="-1">
-                <div class="form-group">
-                    <label>Nombre del Diferencial:</label>
-                    <input type="text" id="id-nombre" placeholder="Ej. ID 2 - Cocina" required>
-                </div>
-                <div class="form-group">
-                    <label>Sensibilidad / Calibre:</label>
-                    <select id="id-valores">
-                        <option value="40A / 30mA">40A / 30mA (Estándar)</option>
-                        <option value="25A / 30mA">25A / 30mA</option>
-                        <option value="63A / 30mA">63A / 30mA</option>
-                        <option value="40A / 300mA">40A / 300mA</option>
-                    </select>
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <button type="submit" id="btn-id-submit" class="btn btn-accent" style="flex:1; padding:6px;">➕ Añadir</button>
-                    <button type="button" id="btn-id-cancel" onclick="cancelarEdicionID()" class="btn" style="padding:6px; background:#94a3b8; display:none;">Cancelar</button>
-                </div>
-            </form>
+            <h3 id="form-id-title" onclick="conmutarSeccion(this)">⚙️ 2. Añadir Diferencial</h3>
+            <div class="bloque-colapsable">
+                <form id="form-id" onsubmit="procesarDiferencial(event)" style="margin-bottom: 15px;">
+                    <input type="hidden" id="edit-id-idx" value="-1">
+                    <div class="form-group">
+                        <label>Nombre del Diferencial:</label>
+                        <input type="text" id="id-nombre" placeholder="Ej. ID 2 - Cocina" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sensibilidad / Calibre:</label>
+                        <select id="id-valores">
+                            <option value="40A / 30mA">40A / 30mA (Estándar)</option>
+                            <option value="25A / 30mA">25A / 30mA</option>
+                            <option value="63A / 30mA">63A / 30mA</option>
+                            <option value="40A / 300mA">40A / 300mA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Red / Polos:</label>
+                        <select id="id-tipo" onchange="actualizarVisibilidadSelectorFase()">
+                            <option value="monofasico" selected>Monofásico (2P)</option>
+                            <option value="trifasico">Trifásico (4P)</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button type="submit" id="btn-id-submit" class="btn btn-accent" style="flex:1; padding:6px;">➕ Añadir</button>
+                        <button type="button" id="btn-id-cancel" onclick="cancelarEdicionID()" class="btn" style="padding:6px; background:#94a3b8; display:none;">Cancelar</button>
+                    </div>
+                </form>
+            </div>
 
-            <h3>📋 Listado de Diferenciales</h3>
-            <div class="lista-items" id="lista-gestion-ids"></div>
+            <h3 onclick="conmutarSeccion(this)">📋 Listado de Diferenciales</h3>
+            <div class="bloque-colapsable lista-items" id="lista-gestion-ids"></div>
 
-            <h3>🔄 3. Disposición y Asociación</h3>
-            <div class="lista-items" id="lista-gestion-circuitos"></div>
+            <h3 onclick="conmutarSeccion(this)">🔄 3. Disposición y Asociación</h3>
+            <div class="bloque-colapsable lista-items" id="lista-gestion-circuitos"></div>
         </div>
 
-        <div class="unifilar-scroll-container">
-            <div class="unifilar-canvas">
-                
-                <div class="acometida" id="plano-di-bloque">
-                    🔌 DERIVACIÓN INDIVIDUAL <br>
-                    <span style="font-size:11px; font-weight:normal;">Calculando parámetros...</span>
-                </div>
-
-                <div class="iga-box" id="plano-iga-bloque">
-                    <strong style="color:#b91c1c;">IGA 40A</strong><br>
-                    <span style="font-size:10px; color:#64748b;">Poder de Corte: 10 kA</span>
-                </div>
-
-                <div class="embarrado-principal" id="esquema-unifilar-dinamico"></div>
-
-            </div>
+        <div class="unifilar-scroll-container" id="contenedor-plano">
+            <svg id="cad-canvas" width="100%" height="700" version="1.1" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Consolas', 'Courier New', monospace; font-weight: bold; display: block; margin: 0 auto;">
+            </svg>
         </div>
 
     </div>
 </div>
 
 <script>
-    const SIMBOLO_DIFERENCIAL_SVG = `
-        <svg class="icono-esquema-tecnico" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="25" y1="0" x2="25" y2="70" stroke="#334155" stroke-width="2" />
-            <line x1="25" y1="15" x2="13" y2="30" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="25" cy="42" r="9" stroke="#6d28d9" stroke-width="2" fill="white"/>
-            <path d="M16 42H10V24H18" stroke="#ef4444" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
-            <rect x="7" y="40" width="6" height="5" fill="#ef4444"/>
-        </svg>
-    `;
-
-    const SIMBOLO_MAGNETOTERMICO_SVG = `
-        <svg class="icono-esquema-tecnico" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="25" y1="0" x2="25" y2="70" stroke="#334155" stroke-width="2" />
-            <line x1="25" y1="18" x2="12" y2="35" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="M25 45 C15 45, 15 52, 25 52" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
-            <path d="M25 52 L17 52 L17 58 L25 58" stroke="#475569" stroke-width="2" fill="none" stroke-linecap="round"/>
-        </svg>
-    `;
-
-    // Variables de estado iniciales
+    let individualesActivosGlobales = [];
     let diferenciales = JSON.parse(localStorage.getItem('unifilar_diferenciales')) || [
-        { id: "id_gen", nombre: "ID 1 - General", valores: "40A / 30mA" }
+        { id: "id_gen", nombre: "ID 1 - General", valores: "40A / 30mA", tipo: "monofasico" },
+        { id: "id_cocina", nombre: "ID 2 - Cocina y Baño", valores: "40A / 30mA", tipo: "monofasico" }
     ];
-    let configIGA = JSON.parse(localStorage.getItem('unifilar_iga')) || { calibre: "40A", poderCorte: "10 kA" };
-    
-    // Configuración por defecto de la Derivación Individual
-    let configDI = JSON.parse(localStorage.getItem('unifilar_di')) || {
-        material: "Cu",
-        seccion: "10",
-        longitud: "15",
-        sistema: "monofasico"
-    };
+    // Asegurar retrocompatibilidad si venían sin la propiedad tipo instalada en el localStorage
+    diferenciales.forEach(d => { if(!d.tipo) d.tipo = "monofasico"; });
 
+    let configIGA = JSON.parse(localStorage.getItem('unifilar_iga')) || { calibre: "50A", poderCorte: "10 kA" };
+    let configDI = JSON.parse(localStorage.getItem('unifilar_di')) || { material: "Cu", seccion: "10", longitud: "15", sistema: "monofasico" };
     let ordenCircuitos = [];
-    let potenciaTotalCuadro = 0; // Para el cálculo de la CDT de la DI
+    let potenciaTotalCuadro = 0;
+    let modoImpresionActivo = false;
 
-    document.addEventListener("DOMContentLoaded", () => {
-        if (!localStorage.getItem('unifilar_diferenciales')) localStorage.setItem('unifilar_diferenciales', JSON.stringify(diferenciales));
-        if (!localStorage.getItem('unifilar_iga')) localStorage.setItem('unifilar_iga', JSON.stringify(configIGA));
-        if (!localStorage.getItem('unifilar_di')) localStorage.setItem('unifilar_di', JSON.stringify(configDI));
-        
-        // Cargar inputs
-        document.getElementById('iga-calibre').value = configIGA.calibre;
-        document.getElementById('iga-cortocircuito').value = configIGA.poderCorte;
-        
-        document.getElementById('di-material').value = configDI.material;
-        document.getElementById('di-seccion').value = configDI.seccion;
-        document.getElementById('di-longitud').value = configDI.longitud;
-        document.getElementById('di-sistema').value = configDI.sistema;
-
+document.addEventListener('DOMContentLoaded', async () => {
+    const idProyecto = localStorage.getItem('proyecto_activo_id');
+    if (!idProyecto) {
+        console.log("ℹ️ No hay un ID de proyecto activo en el LocalStorage.");
         cargarDatosOriginales();
-    });
+        return;
+    }
 
+    try {
+        const respuesta = await fetch(`/api/proyectos/obtener/${idProyecto}?_=${new Date().getTime()}`);
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok && resultado.status === 'success' && resultado.proyecto) {
+            const proyecto = resultado.proyecto;
+            const datosCuadro = proyecto.datos_cuadro || {};
+            const circuitosServidor = datosCuadro.circuitos || [];
+
+            if (circuitosServidor.length > 0) {
+                console.log(`🔌 Sincronizando ${circuitosServidor.length} circuitos con el esquema...`);
+                
+                ordenCircuitos = circuitosServidor.map(c => {
+                    let mapaExistente = JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {};
+                    let idDiferencialAsignado = mapaExistente[c.circuito];
+
+                    if (!idDiferencialAsignado) {
+                        idDiferencialAsignado = (typeof diferenciales !== 'undefined' && diferenciales[0]) ? diferenciales[0].id : "id_gen";
+                    }
+
+                    return {
+                        id: c.circuito || '',                 
+                        potencia: parseFloat(c.potencia) || 0, 
+                        longitud: parseFloat(c.longitud) || 0, 
+                        seccion: c.seccion || '2.5',          
+                        magneto: c.pia || '16',                
+                        sistema: c.red || 'Monofásico',        
+                        diferencialAsignado: idDiferencialAsignado,
+                        res_calculados: {
+                            intensidad: parseFloat(c.ib) || 0,
+                            iz_admisible: parseFloat(c.iz) || 0,
+                            tubo: c.canalizacion || '20',
+                            caida_porcentaje: parseFloat(c.delta_u) || 0
+                        }
+                    };
+                });
+
+                localStorage.setItem('unifilar_orden_circuitos', JSON.stringify(ordenCircuitos));
+                refrescarTodo();
+            } else {
+                console.log("ℹ️ El proyecto está en el servidor pero no contiene circuitos.");
+                cargarDatosOriginales();
+            }
+        } else {
+            cargarDatosOriginales();
+        }
+    } catch (error) {
+        console.error("❌ Error al renderizar el unifilar desde el servidor:", error);
+        cargarDatosOriginales();
+    }
+});
+
+function conmutarSeccion(elementoTitulo) {
+    // Alterna la clase visual de la flecha en el h3
+    elementoTitulo.classList.toggle('colapsado');
+    
+    // Obtiene el elemento hermano que está justo después del título
+    const contenido = elementoTitulo.nextElementSibling;
+    if (contenido) {
+        contenido.classList.toggle('oculto');
+    }
+}
     function cargarDatosOriginales() {
         fetch('/calcular', {
             method: 'POST',
@@ -425,77 +394,436 @@
         .then(res => res.json())
         .then(data => {
             if (data.status === "success" && data.cuadro) {
-                potenciaTotalCuadro = data.p_coinc || 0; // Usamos potencia coincidente del REBT
+                potenciaTotalCuadro = data.p_coinc || 0;
                 sincronizarOrden(data.cuadro);
-                renderizarControlesID();
-                renderizarControlesCircuitos();
-                pintarIGAPlano();
-                actualizarDI(); // Calcula e imprime la DI en pantalla
-                construirUnifilarGrafico();
+            } else {
+                potenciaTotalCuadro = 4600;
+                const mockCuadro = [
+                    { id: "C1 - ILUMINACIÓN", potencia: 2300, seccion: 1.5, longitud: 20, magneto: 10, res_calculados: { caida_porcentaje: "2.39" } },
+                    { id: "C2 - TOMAS GENERALES", potencia: 3450, seccion: 2.5, longitud: 25, magneto: 16, res_calculados: { caida_porcentaje: "1.85" } }
+                ];
+                sincronizarOrden(mockCuadro);
             }
+            refrescarTodo();
+        })
+        .catch(() => {
+            potenciaTotalCuadro = 4600;
+            const mockCuadro = [
+                { id: "C1 - ILUMINACIÓN", potencia: 2300, seccion: 1.5, longitud: 20, magneto: 10, res_calculados: { caida_porcentaje: "2.39" } },
+                { id: "C2 - TOMAS GENERALES", potencia: 3450, seccion: 2.5, longitud: 25, magneto: 16, res_calculados: { caida_porcentaje: "1.85" } }
+            ];
+            sincronizarOrden(mockCuadro);
+            refrescarTodo();
         });
     }
 
-    // LÓGICA DE CÁLCULO DE LA DERIVACIÓN INDIVIDUAL (ITC-BT-15)
-    function actualizarDI() {
-        configDI.material = document.getElementById('di-material').value;
-        configDI.seccion = parseFloat(document.getElementById('di-seccion').value);
-        configDI.longitud = parseFloat(document.getElementById('di-longitud').value) || 0;
-        configDI.sistema = document.getElementById('di-sistema').value;
+    function refrescarTodo() {
+        renderizarControlesID();
+        renderizarControlesCircuitos();
+        actualizarDI();
+    }
+
+    function conmutarModoImpresion() {
+        const contenedor = document.getElementById('contenedor-plano');
+        modoImpresionActivo = !modoImpresionActivo;
+        if (modoImpresionActivo) {
+            contenedor.classList.add('modo-impresion');
+        } else {
+            contenedor.classList.remove('modo-impresion');
+        }
+        construirUnifilarGrafico();
+    }
+
+function actualizarDI() {
+        if(document.getElementById('di-material')) configDI.material = document.getElementById('di-material').value;
+        if(document.getElementById('di-seccion')) configDI.seccion = parseFloat(document.getElementById('di-seccion').value);
+        if(document.getElementById('di-longitud')) configDI.longitud = parseFloat(document.getElementById('di-longitud').value) || 0;
+        if(document.getElementById('di-sistema')) configDI.sistema = document.getElementById('di-sistema').value;
         localStorage.setItem('unifilar_di', JSON.stringify(configDI));
 
-        // Constantes físicas del REBT para cables termoestables a 90°C (Servicio permanente)
+        // 🌟 CORRECCIÓN: Si potenciaTotalCuadro no se ha cargado o es 0, sumamos la potencia real de los circuitos activos
+        let potenciaCalculo = parseFloat(potenciaTotalCuadro) || 0;
+        if (potenciaCalculo === 0 && ordenCircuitos && ordenCircuitos.length > 0) {
+            potenciaCalculo = ordenCircuitos.reduce((acc, c) => acc + (parseFloat(c.potencia) || 0), 0);
+        }
+
+        // Si aun así no hay potencia (cuadro vacío), evitamos el cálculo erróneo
+        if (potenciaCalculo === 0) potenciaCalculo = 4600; // Valor mínimo de cortesía para que se mueva el gráfico
+
         const cond = configDI.material === "Cu" ? 48.47 : 29.56; 
         const tension = configDI.sistema === "monofasico" ? 230 : 400;
         
-        // Caída de tensión en porcentaje
+        // 🌟 CORRECCIÓN DE LA FÓRMULA REBT:
+        // Monofásico: 2 * L * P / (𝛾 * S * V)   -> (V en el denominador para % o V² para voltios, corregido a porcentaje directo)
         let cdt = 0;
         if (configDI.sistema === "monofasico") {
-            cdt = (2 * potenciaTotalCuadro * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
+            cdt = (2 * potenciaCalculo * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
         } else {
-            cdt = (potenciaTotalCuadro * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
+            cdt = (potenciaCalculo * configDI.longitud) / (cond * configDI.seccion * Math.pow(tension, 2));
         }
-        cdt = cdt * 100;
-
-        // Límite legal REBT para DI: Contador único = 1.5%, Contadores centralizados = 1.0%
-        const limiteDI = 1.0; 
-        const cumpleCDT = cdt <= limiteDI ? `<span style="color:#0f766e;">✔ Cumple</span>` : `<span style="color:#ef4444;">❌ Excede REBT</span>`;
-
-        const cajaDI = document.getElementById('plano-di-bloque');
-        cajaDI.innerHTML = `
-            <span style="color:var(--di-color); font-size:11px; letter-spacing:0.5px; display:block; margin-bottom:2px;">⚡ DERIVACIÓN INDIVIDUAL (ITC-BT-15)</span>
-            <strong>Línea de ${configDI.material} - ${configDI.seccion} mm²</strong><br>
-            <span style="font-size:11px; font-weight:normal; color:#475569;">
-                Longitud: ${configDI.longitud}m | ΔU: <strong>${cdt.toFixed(2)}%</strong> (${cumpleCDT})
-            </span>
-        `;
+        
+        configDI.cdtCalculada = (cdt * 100).toFixed(2);
+		actualizarVisibilidadSelectorFase();
+        construirUnifilarGrafico();
     }
 
     function actualizarIGA() {
         configIGA.calibre = document.getElementById('iga-calibre').value;
         configIGA.poderCorte = document.getElementById('iga-cortocircuito').value;
         localStorage.setItem('unifilar_iga', JSON.stringify(configIGA));
-        pintarIGAPlano();
+        construirUnifilarGrafico();
     }
 
-    function pintarIGAPlano() {
-        const cajaIGA = document.getElementById('plano-iga-bloque');
-        cajaIGA.innerHTML = `
-            <strong style="color:#b91c1c;">IGA ${configIGA.calibre}</strong><br>
-            <span style="font-size:10px; color:#64748b;">Poder de Corte: ${configIGA.poderCorte}</span>
+// --- RENDERIZADO DEL PLANO VECTORIAL CAD ---
+function construirUnifilarGrafico() {
+    const svg = document.getElementById('cad-canvas');
+    if (!svg) return;
+    svg.innerHTML = ""; 
+
+    const colorLinea = modoImpresionActivo ? "#000000" : "#ffffff";
+    const colorSimbolo = modoImpresionActivo ? "#000000" : "#00ff00"; 
+    const colorAttr = modoImpresionActivo ? "#000000" : "#ffff00";   
+    const colorCircuito = modoImpresionActivo ? "#000000" : "#00ffff"; 
+
+    let individualesActivos = diferenciales.filter(d => ordenCircuitos.some(c => c.diferencialAsignado === d.id));
+    if (individualesActivos.length === 0 && diferenciales.length > 0) {
+        individualesActivos = [diferenciales[0]];
+    }
+
+    const anchoColumnaCircuito = 220;  
+    const margenIzquierdo = 80;
+    const separacionDiferenciales = 80; 
+
+    let sistemaGeneralLimpio = String(configDI.sistema || 'monofasico').toLowerCase();
+    const esDITrifasica = sistemaGeneralLimpio.includes("tri") || sistemaGeneralLimpio.includes("400");
+    
+    const prefijoHilosAcometida = esDITrifasica ? "4x" : "2x";
+    const polosIGA = esDITrifasica ? "4P" : "2P";
+
+    let listaCoordenadasDiferenciales = [];
+    let xAcumulada = margenIzquierdo;
+
+    individualesActivos.forEach(d => {
+        let hijos = ordenCircuitos.filter(c => c.diferencialAsignado === d.id);
+        let nColumnas = Math.max(1, hijos.length);
+        let anchoBloque = nColumnas * anchoColumnaCircuito;
+        
+        let xInicioSubembarrado = xAcumulada + (anchoColumnaCircuito / 2);
+        let xFinSubembarrado = xAcumulada + anchoBloque - (anchoColumnaCircuito / 2);
+        let xCentroDiferencial = (xInicioSubembarrado + xFinSubembarrado) / 2;
+
+        listaCoordenadasDiferenciales.push({
+            id: d.id, xCentro: xCentroDiferencial, xInicio: xInicioSubembarrado, xFin: xFinSubembarrado, xBaseIzquierda: xAcumulada, hijosCount: hijos.length
+        });
+        xAcumulada += anchoBloque + separacionDiferenciales;
+    });
+
+    const anchoPlano = xAcumulada - separacionDiferenciales + margenIzquierdo;
+    svg.setAttribute("viewBox", `0 0 ${Math.max(950, anchoPlano)} 620`);
+
+    if(listaCoordenadasDiferenciales.length === 0) return;
+    
+    const centroGlobalX = (listaCoordenadasDiferenciales[0].xCentro + listaCoordenadasDiferenciales[listaCoordenadasDiferenciales.length - 1].xCentro) / 2;
+
+    let dibujoIGAGrafico = '';
+    if (esDITrifasica) {
+        const dX = 8;
+        dibujoIGAGrafico = `
+            <line x1="${centroGlobalX}" y1="80" x2="${centroGlobalX}" y2="95" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="95" x2="${centroGlobalX - 1.5 * dX}" y2="102" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="102" x2="${centroGlobalX - 1.5 * dX + 10}" y2="122" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="122" x2="${centroGlobalX - 1.5 * dX}" y2="135" stroke="${colorSimbolo}" stroke-width="2"/>
+            <path d="M ${centroGlobalX - 1.5 * dX - 4} 97 L ${centroGlobalX - 1.5 * dX + 4} 97 M ${centroGlobalX - 1.5 * dX - 4} 127 L ${centroGlobalX - 1.5 * dX + 4} 127" stroke="${colorSimbolo}" stroke-width="1.2"/>
+            <line x1="${centroGlobalX - 0.5 * dX}" y1="95" x2="${centroGlobalX - 0.5 * dX}" y2="102" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX - 0.5 * dX}" y1="102" x2="${centroGlobalX - 0.5 * dX + 10}" y2="122" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${centroGlobalX - 0.5 * dX}" y1="122" x2="${centroGlobalX - 0.5 * dX}" y2="135" stroke="${colorSimbolo}" stroke-width="2"/>
+            <path d="M ${centroGlobalX - 0.5 * dX - 4} 97 L ${centroGlobalX - 0.5 * dX + 4} 97 M ${centroGlobalX - 0.5 * dX - 4} 127 L ${centroGlobalX - 0.5 * dX + 4} 127" stroke="${colorSimbolo}" stroke-width="1.2"/>
+            <line x1="${centroGlobalX + 0.5 * dX}" y1="95" x2="${centroGlobalX + 0.5 * dX}" y2="102" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX + 0.5 * dX}" y1="102" x2="${centroGlobalX + 0.5 * dX + 10}" y2="122" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${centroGlobalX + 0.5 * dX}" y1="122" x2="${centroGlobalX + 0.5 * dX}" y2="135" stroke="${colorSimbolo}" stroke-width="2"/>
+            <path d="M ${centroGlobalX + 0.5 * dX - 4} 97 L ${centroGlobalX + 0.5 * dX + 4} 97 M ${centroGlobalX + 0.5 * dX - 4} 127 L ${centroGlobalX + 0.5 * dX + 4} 127" stroke="${colorSimbolo}" stroke-width="1.2"/>
+            <line x1="${centroGlobalX + 1.5 * dX}" y1="95" x2="${centroGlobalX + 1.5 * dX}" y2="102" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX + 1.5 * dX}" y1="102" x2="${centroGlobalX + 1.5 * dX + 10}" y2="122" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${centroGlobalX + 1.5 * dX}" y1="122" x2="${centroGlobalX + 1.5 * dX}" y2="135" stroke="${colorSimbolo}" stroke-width="2"/>
+            <path d="M ${centroGlobalX + 1.5 * dX - 4} 97 L ${centroGlobalX + 1.5 * dX + 4} 97 M ${centroGlobalX + 1.5 * dX - 4} 127 L ${centroGlobalX + 1.5 * dX + 4} 127" stroke="${colorSimbolo}" stroke-width="1.2"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="95" x2="${centroGlobalX + 1.5 * dX}" y2="95" stroke="${colorSimbolo}" stroke-width="1.5"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="135" x2="${centroGlobalX + 1.5 * dX}" y2="135" stroke="${colorSimbolo}" stroke-width="1.5"/>
+            <line x1="${centroGlobalX - 1.5 * dX}" y1="112" x2="${centroGlobalX + 1.5 * dX + 5}" y2="112" stroke="${colorSimbolo}" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="${centroGlobalX}" y1="135" x2="${centroGlobalX}" y2="160" stroke="${colorLinea}" stroke-width="2"/>
+        `;
+    } else {
+        dibujoIGAGrafico = `
+            <line x1="${centroGlobalX}" y1="80" x2="${centroGlobalX}" y2="95" stroke="${colorSimbolo}" stroke-width="2"/>
+            <line x1="${centroGlobalX}" y1="95" x2="${centroGlobalX + 12}" y2="115" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+            <line x1="${centroGlobalX}" y1="115" x2="${centroGlobalX}" y2="130" stroke="${colorSimbolo}" stroke-width="2"/>
+            <path d="M ${centroGlobalX - 6} 90 L ${centroGlobalX + 6} 90 M ${centroGlobalX - 6} 120 L ${centroGlobalX + 6} 120" stroke="${colorSimbolo}" stroke-width="1.5"/>
+            <line x1="${centroGlobalX}" y1="130" x2="${centroGlobalX}" y2="160" stroke="${colorLinea}" stroke-width="2"/>
         `;
     }
 
-    function sincronizarOrden(cuadroServidor) {
-        let mapaExistente = JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {};
-        ordenCircuitos = cuadroServidor.map(c => {
-            let idAsignado = mapaExistente[c.id];
-            let existeID = diferenciales.some(d => d.id === idAsignado);
-            if (!idAsignado || !existeID) idAsignado = diferenciales[0].id;
-            return { ...c, diferencialAsignado: idAsignado };
-        });
-        guardarEstadoLocal();
+    let htmlSvg = `
+        <circle cx="${centroGlobalX}" cy="35" r="5" fill="none" stroke="${colorLinea}" stroke-width="2"/>
+        <line x1="${centroGlobalX}" y1="40" x2="${centroGlobalX}" y2="80" stroke="${colorLinea}" stroke-width="2"/>
+        <text x="${centroGlobalX + 15}" y="45" fill="${colorLinea}" font-size="12px" font-weight="bold">LÍNEA GENERAL DE RED</text>
+        <text x="${centroGlobalX + 15}" y="60" fill="${colorCircuito}" font-size="11px">DI: ${configDI.material} ${prefijoHilosAcometida}${configDI.seccion}mm² + T | L = ${configDI.longitud}m</text>
+        <text x="${centroGlobalX + 15}" y="75" fill="${colorCircuito}" font-size="11px">ΔU = ${configDI.cdtCalculada || '0.00'}% (Límite REBT 1.0%)</text>
+
+        ${dibujoIGAGrafico}
+        <text x="${esDITrifasica ? centroGlobalX + 32 : centroGlobalX + 25}" y="105" fill="${colorAttr}" font-size="13px">IGA ${polosIGA} ${configIGA.calibre}</text>
+        <text x="${esDITrifasica ? centroGlobalX + 32 : centroGlobalX + 25}" y="121" fill="${colorCircuito}" font-size="11px">Icn = ${configIGA.poderCorte} Curva C</text>
+    `;
+
+    let primerX = listaCoordenadasDiferenciales[0].xCentro;
+    let ultimoX = listaCoordenadasDiferenciales[listaCoordenadasDiferenciales.length - 1].xCentro;
+    if(listaCoordenadasDiferenciales.length === 1) {
+        htmlSvg += `<line x1="${primerX - 50}" y1="160" x2="${primerX + 50}" y2="160" stroke="${colorLinea}" stroke-width="3"/>`;
+    } else {
+        htmlSvg += `<line x1="${primerX}" y1="160" x2="${ultimoX}" y2="160" stroke="${colorLinea}" stroke-width="3"/>`;
     }
+
+    individualesActivos.forEach((d, idx) => {
+        let coord = listaCoordenadasDiferenciales[idx];
+        let hijos = ordenCircuitos.filter(c => c.diferencialAsignado === d.id);
+
+        let dTipoLimpio = String(d.tipo || 'monofasico').toLowerCase();
+        let diferencialEsTrifasico = dTipoLimpio === "trifasico" || dTipoLimpio === "4p";
+        let polosID = diferencialEsTrifasico ? "4P" : "2P";
+
+        let dibujoDiferencialGrafico = '';
+        if (diferencialEsTrifasico) {
+            const dX = 8; 
+            dibujoDiferencialGrafico = `
+                <line x1="${coord.xCentro}" y1="160" x2="${coord.xCentro}" y2="190" stroke="${colorLinea}" stroke-width="2"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="190" x2="${coord.xCentro + 1.5 * dX}" y2="190" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="190" x2="${coord.xCentro - 1.5 * dX}" y2="200" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="200" x2="${coord.xCentro - 1.5 * dX + 10}" y2="220" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="220" x2="${coord.xCentro - 1.5 * dX}" y2="240" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro - 0.5 * dX}" y1="190" x2="${coord.xCentro - 0.5 * dX}" y2="200" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro - 0.5 * dX}" y1="200" x2="${coord.xCentro - 0.5 * dX + 10}" y2="220" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${coord.xCentro - 0.5 * dX}" y1="220" x2="${coord.xCentro - 0.5 * dX}" y2="240" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro + 0.5 * dX}" y1="190" x2="${coord.xCentro + 0.5 * dX}" y2="200" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro + 0.5 * dX}" y1="200" x2="${coord.xCentro + 0.5 * dX + 10}" y2="220" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${coord.xCentro + 0.5 * dX}" y1="220" x2="${coord.xCentro + 0.5 * dX}" y2="240" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro + 1.5 * dX}" y1="190" x2="${coord.xCentro + 1.5 * dX}" y2="200" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro + 1.5 * dX}" y1="200" x2="${coord.xCentro + 1.5 * dX + 10}" y2="220" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${coord.xCentro + 1.5 * dX}" y1="220" x2="${coord.xCentro + 1.5 * dX}" y2="240" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="240" x2="${coord.xCentro + 1.5 * dX}" y2="240" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                <line x1="${coord.xCentro - 1.5 * dX}" y1="210" x2="${coord.xCentro + 1.5 * dX + 4}" y2="210" stroke="${colorSimbolo}" stroke-width="1" stroke-dasharray="2,2"/>
+                <path d="M ${coord.xCentro - 18} 214 A 4 5 0 1 0 ${coord.xCentro - 12} 206" fill="none" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                <line x1="${coord.xCentro - 14}" y1="210" x2="${coord.xCentro - 1.5 * dX}" y2="210" stroke="${colorSimbolo}" stroke-width="1"/>
+                <line x1="${coord.xCentro}" y1="240" x2="${coord.xCentro}" y2="270" stroke="${colorLinea}" stroke-width="2"/>
+            `;
+        } else {
+            dibujoDiferencialGrafico = `
+                <line x1="${coord.xCentro}" y1="160" x2="${coord.xCentro}" y2="190" stroke="${colorLinea}" stroke-width="2"/>
+                <line x1="${coord.xCentro}" y1="190" x2="${coord.xCentro}" y2="205" stroke="${colorSimbolo}" stroke-width="2"/>
+                <line x1="${coord.xCentro}" y1="205" x2="${coord.xCentro + 12}" y2="225" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${coord.xCentro}" y1="225" x2="${coord.xCentro}" y2="240" stroke="${colorSimbolo}" stroke-width="2"/>
+                <path d="M ${coord.xCentro - 8} 215 A 4 4 0 1 0 ${coord.xCentro - 4} 211" fill="none" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                <line x1="${coord.xCentro - 4}" y1="211" x2="${coord.xCentro}" y2="215" stroke="${colorSimbolo}" stroke-width="1"/>
+                <line x1="${coord.xCentro}" y1="240" x2="${coord.xCentro}" y2="270" stroke="${colorLinea}" stroke-width="2"/>
+            `;
+        }
+
+        const offsetTextX = diferencialEsTrifasico ? 35 : 20;
+
+        let textoFaseGrafico = "";
+        if (esDITrifasica && !diferencialEsTrifasico) {
+            const f = d.fase || 'L1';
+            let nomenclaturaTradicional = f === 'L1' ? 'R' : (f === 'L2' ? 'S' : 'T');
+            textoFaseGrafico = ` - FASE ${nomenclaturaTradicional} (${f})`;
+        }
+
+        htmlSvg += `
+            ${dibujoDiferencialGrafico}
+            <text x="${coord.xCentro + offsetTextX}" y="205" fill="${colorLinea}" font-size="12px" font-weight="bold">${d.nombre.toUpperCase()}</text>
+            <text x="${coord.xCentro + offsetTextX}" y="220" fill="${colorAttr}" font-size="11px">ID ${polosID} ${d.valores}<tspan fill="${modoImpresionActivo ? '#000000' : '#ff00ff'}" font-weight="bold">${textoFaseGrafico}</tspan></text>
+            <text x="${coord.xCentro + offsetTextX}" y="234" fill="${colorCircuito}" font-size="10px">Clase AC / Idn=30mA</text>
+        `;
+
+        if (coord.hijosCount > 0) {
+            htmlSvg += `<line x1="${coord.xInicio}" y1="270" x2="${coord.xFin}" y2="270" stroke="${colorLinea}" stroke-width="2.5"/>`;
+        }
+
+        hijos.forEach((c, indexHijo) => {
+            let currentPIA_X = coord.xBaseIzquierda + (indexHijo * anchoColumnaCircuito) + (anchoColumnaCircuito / 2);
+            let caida = c.res_calculados ? (c.res_calculados.caida_porcentaje || '0.00') : '0.00';
+
+            let redCircuitoLimpia = String(c.sistema || 'monofasico').toLowerCase();
+            let esCircuitoTrifasico = redCircuitoLimpia.includes("tri") || redCircuitoLimpia.includes("400");
+
+            let hilosCircuitoText = esCircuitoTrifasico ? `3x${c.seccion}+N+T` : `2x${c.seccion}mm²+T`;
+            let polosPIA = esCircuitoTrifasico ? "4P" : "2P";
+            let labelRedGrafico = esCircuitoTrifasico ? "TRIFÁSICO 400V" : "MONOFÁSICO 230V";
+
+            // --- COMPROBACIÓN NORMATIVA DE TUBOS (ITC-BT-21) ---
+            let diametroTubo = 20; 
+            let sVal = parseFloat(c.seccion) || 2.5;
+
+            if (esCircuitoTrifasico) {
+                if (sVal <= 1.5) diametroTubo = 20;
+                else if (sVal <= 4)  diametroTubo = 25;
+                else if (sVal <= 6)  diametroTubo = 32;
+                else if (sVal <= 16) diametroTubo = 40;
+                else if (sVal <= 35) diametroTubo = 50;
+                else diametroTubo = 63;
+            } else {
+                if (sVal <= 1.5)      diametroTubo = 16;
+                else if (sVal <= 4)   diametroTubo = 20;
+                else if (sVal <= 10)  diametroTubo = 25;
+                else if (sVal <= 16)  diametroTubo = 32;
+                else if (sVal <= 35)  diametroTubo = 40;
+                else diametroTubo = 50;
+            }
+
+            let dibujoMagnetotermico = '';
+            if (esCircuitoTrifasico) {
+                const dX = 8;
+                dibujoMagnetotermico = `
+                    <line x1="${currentPIA_X}" y1="270" x2="${currentPIA_X}" y2="305" stroke="${colorLinea}" stroke-width="2"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="305" x2="${currentPIA_X - 1.5 * dX}" y2="315" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="315" x2="${currentPIA_X - 1.5 * dX + 10}" y2="335" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="335" x2="${currentPIA_X - 1.5 * dX}" y2="350" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <path d="M ${currentPIA_X - 1.5 * dX - 4} 310 L ${currentPIA_X - 1.5 * dX + 4} 310 M ${currentPIA_X - 1.5 * dX - 4} 345 L ${currentPIA_X - 1.5 * dX + 4} 345" stroke="${colorSimbolo}" stroke-width="1.2"/>
+                    <line x1="${currentPIA_X - 0.5 * dX}" y1="305" x2="${currentPIA_X - 0.5 * dX}" y2="315" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <line x1="${currentPIA_X - 0.5 * dX}" y1="315" x2="${currentPIA_X - 0.5 * dX + 10}" y2="335" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="${currentPIA_X - 0.5 * dX}" y1="335" x2="${currentPIA_X - 0.5 * dX}" y2="350" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <path d="M ${currentPIA_X - 0.5 * dX - 4} 310 L ${currentPIA_X - 0.5 * dX + 4} 310 M ${currentPIA_X - 0.5 * dX - 4} 345 L ${currentPIA_X - 0.5 * dX + 4} 345" stroke="${colorSimbolo}" stroke-width="1.2"/>
+                    <line x1="${currentPIA_X + 0.5 * dX}" y1="305" x2="${currentPIA_X + 0.5 * dX}" y2="315" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <line x1="${currentPIA_X + 0.5 * dX}" y1="315" x2="${currentPIA_X + 0.5 * dX + 10}" y2="335" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="${currentPIA_X + 0.5 * dX}" y1="335" x2="${currentPIA_X + 0.5 * dX}" y2="350" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <path d="M ${currentPIA_X + 0.5 * dX - 4} 310 L ${currentPIA_X + 0.5 * dX + 4} 310 M ${currentPIA_X + 0.5 * dX - 4} 345 L ${currentPIA_X + 0.5 * dX + 4} 345" stroke="${colorSimbolo}" stroke-width="1.2"/>
+                    <line x1="${currentPIA_X + 1.5 * dX}" y1="305" x2="${currentPIA_X + 1.5 * dX}" y2="315" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <line x1="${currentPIA_X + 1.5 * dX}" y1="315" x2="${currentPIA_X + 1.5 * dX + 10}" y2="335" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="${currentPIA_X + 1.5 * dX}" y1="335" x2="${currentPIA_X + 1.5 * dX}" y2="350" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <path d="M ${currentPIA_X + 1.5 * dX - 4} 310 L ${currentPIA_X + 1.5 * dX + 4} 310 M ${currentPIA_X + 1.5 * dX - 4} 345 L ${currentPIA_X + 1.5 * dX + 4} 345" stroke="${colorSimbolo}" stroke-width="1.2"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="305" x2="${currentPIA_X + 1.5 * dX}" y2="305" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="350" x2="${currentPIA_X + 1.5 * dX}" y2="350" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                    <line x1="${currentPIA_X - 1.5 * dX}" y1="325" x2="${currentPIA_X + 1.5 * dX + 5}" y2="325" stroke="${colorSimbolo}" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="${currentPIA_X}" y1="350" x2="${currentPIA_X}" y2="390" stroke="${colorLinea}" stroke-width="1.5"/>
+                `;
+            } else {
+                dibujoMagnetotermico = `
+                    <line x1="${currentPIA_X}" y1="270" x2="${currentPIA_X}" y2="315" stroke="${colorLinea}" stroke-width="2"/>
+                    <line x1="${currentPIA_X}" y1="315" x2="${currentPIA_X}" y2="320" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <line x1="${currentPIA_X}" y1="320" x2="${currentPIA_X + 10}" y2="340" stroke="${colorSimbolo}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="${currentPIA_X}" y1="340" x2="${currentPIA_X}" y2="355" stroke="${colorSimbolo}" stroke-width="2"/>
+                    <path d="M ${currentPIA_X - 5} 315 L ${currentPIA_X + 5} 315 M ${currentPIA_X - 5} 345 L ${currentPIA_X + 5} 345" stroke="${colorSimbolo}" stroke-width="1.5"/>
+                    <line x1="${currentPIA_X}" y1="355" x2="${currentPIA_X}" y2="390" stroke="${colorLinea}" stroke-width="1.5"/>
+                `;
+            }
+
+            // --- 🌟 ALGORITMO DE AUTO-AJUSTE PARA TEXTOS LARGOS 🌟 ---
+            let nombreLimpio = (c.id || c.circuito || '').toUpperCase();
+            let lineaTexto1 = nombreLimpio;
+            let lineaTexto2 = "";
+
+            if (nombreLimpio.length > 15) {
+                let mitad = Math.floor(nombreLimpio.length / 2);
+                let espacioCercano = nombreLimpio.lastIndexOf(" ", mitad);
+                if (espacioCercano === -1) espacioCercano = nombreLimpio.indexOf(" ", mitad);
+                
+                if (espacioCercano !== -1) {
+                    lineaTexto1 = nombreLimpio.substring(0, espacioCercano);
+                    lineaTexto2 = nombreLimpio.substring(espacioCercano + 1);
+                } else {
+                    lineaTexto1 = nombreLimpio.substring(0, 14);
+                    lineaTexto2 = nombreLimpio.substring(14);
+                }
+            }
+
+            let renderIdYFase = '';
+            if (lineaTexto2 !== "") {
+                renderIdYFase = `
+                    <text x="${currentPIA_X}" y="403" fill="${colorAttr}" font-size="9.5px" text-anchor="middle" font-weight="bold">${lineaTexto1}</text>
+                    <text x="${currentPIA_X}" y="413" fill="${colorAttr}" font-size="9.5px" text-anchor="middle" font-weight="bold">${lineaTexto2}</text>
+                    <text x="${currentPIA_X}" y="422" fill="${colorCircuito}" font-size="7.5px" text-anchor="middle" letter-spacing="0.5px">${labelRedGrafico}</text>
+                `;
+            } else {
+                renderIdYFase = `
+                    <text x="${currentPIA_X}" y="407" fill="${colorAttr}" font-size="11px" text-anchor="middle" font-weight="bold">${lineaTexto1}</text>
+                    <text x="${currentPIA_X}" y="420" fill="${colorCircuito}" font-size="8px" text-anchor="middle" letter-spacing="1px">${labelRedGrafico}</text>
+                `;
+            }
+
+            htmlSvg += `
+                ${dibujoMagnetotermico}
+                
+                <text x="${currentPIA_X + 32}" y="324" fill="${colorAttr}" font-size="12px" font-weight="bold">PIA ${polosPIA} ${c.magneto || 16}A</text>
+                <text x="${currentPIA_X + 32}" y="339" fill="${colorCircuito}" font-size="10px">Curva C - 6kA</text>
+                
+                <rect x="${currentPIA_X - 85}" y="390" width="170" height="170" fill="none" stroke="${colorLinea}" stroke-width="1.5"/>
+                <line x1="${currentPIA_X - 85}" y1="425" x2="${currentPIA_X + 85}" y2="425" stroke="${colorLinea}" stroke-width="1"/>
+                <line x1="${currentPIA_X - 85}" y1="465" x2="${currentPIA_X + 85}" y2="465" stroke="${colorLinea}" stroke-width="1"/>
+                <line x1="${currentPIA_X - 85}" y1="515" x2="${currentPIA_X + 85}" y2="515" stroke="${colorLinea}" stroke-width="1"/>
+
+                ${renderIdYFase}
+                
+                <text x="${currentPIA_X - 75}" y="442" fill="${colorLinea}" font-size="9px">POTENCIA:</text>
+                <text x="${currentPIA_X + 75}" y="442" fill="${colorCircuito}" font-size="11px" text-anchor="end">${c.potencia} W</text>
+                
+                <text x="${currentPIA_X - 75}" y="456" fill="${colorLinea}" font-size="9px">LONGITUD:</text>
+                <text x="${currentPIA_X + 75}" y="456" fill="${colorCircuito}" font-size="11px" text-anchor="end">${c.longitud} m</text>
+
+                <text x="${currentPIA_X - 75}" y="485" fill="${colorLinea}" font-size="9px">CONDUCTOR:</text>
+                <text x="${currentPIA_X + 75}" y="485" fill="${colorCircuito}" font-size="9.5px" text-anchor="end">${hilosCircuitoText}</text>
+                
+                <text x="${currentPIA_X - 75}" y="500" fill="${colorLinea}" font-size="9px">CANALIZ.:</text>
+                <text x="${currentPIA_X + 75}" y="500" fill="${colorCircuito}" font-size="11px" text-anchor="end">Ø${diametroTubo}mm</text>
+
+                <text x="${currentPIA_X - 75}" y="538" fill="${colorLinea}" font-size="9px">ΔU (%):</text>
+                <text x="${currentPIA_X + 75}" y="538" fill="${modoImpresionActivo ? '#000000' : '#ffa500'}" font-size="11px" text-anchor="end" font-weight="bold">${caida}%</text>
+                
+                <text x="${currentPIA_X}" y="554" fill="${colorCircuito}" font-size="9px" text-anchor="middle">REBT-ITC-BT-19</text>
+            `;
+        });
+    });
+
+    svg.innerHTML = htmlSvg;
+}
+
+function sincronizarOrden(cuadroServidor) {
+    let mapaExistente = JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {};
+    
+    let individualesActivos = [];
+    if (typeof diferenciales !== 'undefined' && diferenciales) {
+        individualesActivos = diferenciales;
+    } else {
+        individualesActivos = JSON.parse(localStorage.getItem('unifilar_diferenciales')) || [];
+    }
+
+    ordenCircuitos = cuadroServidor.map(c => {
+        let idFijo = c.circuito || c.id || '';
+        let idAsignado = mapaExistente[idFijo];
+        let existe = individualesActivos.some(d => d.id === idAsignado);
+        
+        if (!idAsignado || !existe) {
+            idAsignado = individualesActivos[0] ? individualesActivos[0].id : "id_gen";
+        }
+        
+        let redDetectada = c.red || c.sistema || "Monofásico";
+        let magnetoDetectado = c.pia || c.magneto || '16';
+
+        return { 
+            id: idFijo,
+            potencia: parseFloat(c.potencia) || 0,
+            seccion: c.seccion || '2.5',
+            longitud: parseFloat(c.longitud) || 0,
+            sistema: redDetectada, 
+            magneto: magnetoDetectado,
+            res_calculados: c.res_calculados || {
+                intensidad: parseFloat(c.ib) || 0,
+                iz_admisible: parseFloat(c.iz) || 0,
+                tubo: c.canalizacion || '20',
+                caida_porcentaje: parseFloat(c.delta_u) || 0
+            },
+            diferencialAsignado: idAsignado 
+        };
+    });
+    
+    localStorage.setItem('unifilar_orden_circuitos', JSON.stringify(ordenCircuitos));
+    guardarEstadoLocal();
+}
 
     function guardarEstadoLocal() {
         localStorage.setItem('unifilar_diferenciales', JSON.stringify(diferenciales));
@@ -504,77 +832,149 @@
         localStorage.setItem('unifilar_mapeo_circuitos', JSON.stringify(mapaGuardar));
     }
 
-    function procesarDiferencial(e) {
+function procesarDiferencial(e) {
         e.preventDefault();
         const nombre = document.getElementById('id-nombre').value;
         const valores = document.getElementById('id-valores').value;
+        const tipo = document.getElementById('id-tipo').value; 
+        
+        const selectorFase = document.getElementById('id-fase');
+        const fase = selectorFase ? selectorFase.value : 'L1';
+        
         const editIdx = parseInt(document.getElementById('edit-id-idx').value);
 
         if (editIdx === -1) {
-            diferenciales.push({ id: "id_" + Date.now(), nombre: nombre, valores: valores });
+            diferenciales.push({ 
+                id: "id_" + Date.now(), 
+                nombre: nombre, 
+                valores: valores, 
+                tipo: tipo, 
+                fase: fase 
+            });
         } else {
             diferenciales[editIdx].nombre = nombre;
             diferenciales[editIdx].valores = valores;
+            diferenciales[editIdx].tipo = tipo; 
+            diferenciales[editIdx].fase = fase; 
         }
         guardarEstadoLocal();
         cancelarEdicionID();
-        renderizarControlesID();
-        renderizarControlesCircuitos();
-        construirUnifilarGrafico();
+        refrescarTodo();
     }
 
-    function editarID(index) {
+function editarID(index) {
         const d = diferenciales[index];
+        if(!d.tipo) d.tipo = "monofasico";
+
         document.getElementById('edit-id-idx').value = index;
         document.getElementById('id-nombre').value = d.nombre;
         document.getElementById('id-valores').value = d.valores;
+        document.getElementById('id-tipo').value = d.tipo; 
+        
+        actualizarVisibilidadSelectorFase();
+        if(document.getElementById('id-fase')) {
+            document.getElementById('id-fase').value = d.fase || 'L1';
+        }
+        
         document.getElementById('form-id-title').innerText = "📝 Editando Diferencial";
         document.getElementById('btn-id-submit').innerText = "Guardar 💾";
         document.getElementById('btn-id-cancel').style.display = "inline-block";
+		// Forzar la apertura del bloque del formulario si estuviera cerrado al editar
+    const tituloForm = document.getElementById('form-id-title');
+    tituloForm.classList.remove('colapsado');
+    tituloForm.nextElementSibling.classList.remove('oculto');
     }
 
-    function eliminarID(index) {
-        if (diferenciales.length <= 1) { alert("⚠️ Se necesita al menos un diferencial."); return; }
-        if (!confirm(`¿Eliminar "${diferenciales[index].nombre}"?`)) return;
-        const idAEliminar = diferenciales[index].id;
-        diferenciales.splice(index, 1);
-        ordenCircuitos.forEach(c => { if (c.diferencialAsignado === idAEliminar) c.diferencialAsignado = diferenciales[0].id; });
-        guardarEstadoLocal();
-        cancelarEdicionID();
-        renderizarControlesID();
-        renderizarControlesCircuitos();
-        construirUnifilarGrafico();
-    }
-
-    function cancelarEdicionID() {
+function cancelarEdicionID() {
         document.getElementById('form-id').reset();
         document.getElementById('edit-id-idx').value = "-1";
+        document.getElementById('id-tipo').value = "monofasico"; 
         document.getElementById('form-id-title').innerText = "⚙️ 2. Añadir Diferencial";
         document.getElementById('btn-id-submit').innerText = "Añadir";
         document.getElementById('btn-id-cancel').style.display = "none";
+        actualizarVisibilidadSelectorFase();
+    }
+function eliminarID(index) {
+        if (diferenciales.length <= 1) { alert("⚠️ Se necesita al menos un diferencial."); return; }
+        if (!confirm(`¿Eliminar "${diferenciales[index].nombre}"?`)) return;
+        
+        const idAEliminar = diferenciales[index].id;
+        diferenciales.splice(index, 1);
+        
+        // Reasignar los circuitos huérfanos al primer diferencial disponible
+        ordenCircuitos.forEach(c => { 
+            if (c.diferencialAsignado === idAEliminar) c.diferencialAsignado = diferenciales[0].id; 
+        });
+        
+        guardarEstadoLocal();
+        cancelarEdicionID();
+        refrescarTodo();
     }
 
-    function renderizarControlesID() {
-        const contenedor = document.getElementById('lista-gestion-ids');
-        contenedor.innerHTML = "";
-        diferenciales.forEach((d, idx) => {
-            const div = document.createElement('div');
-            div.className = 'item-row';
-            div.innerHTML = `<div><strong>${d.nombre}</strong><br><span style="font-size:10px; color:#64748b;">${d.valores}</span></div>
-                             <div><button class="btn-mini btn-edit" onclick="editarID(${idx})">✏️</button><button class="btn-mini btn-del" onclick="eliminarID(${idx})">🗑️</button></div>`;
-            contenedor.appendChild(div);
-        });
+function actualizarVisibilidadSelectorFase() {
+        const sistemaDI = document.getElementById('di-sistema').value;
+        const tipoDiferencial = document.getElementById('id-tipo').value;
+        const contenedorFase = document.getElementById('contenedor-selector-fase');
+        
+        // Solo se elige fase si el suministro general es trifásico pero el diferencial es monofásico
+        if (sistemaDI === 'trifasico' && tipoDiferencial === 'monofasico') {
+            if (!contenedorFase) {
+                const form = document.getElementById('form-id');
+                const divBotones = form.lastElementChild; 
+                
+                const nuevoDiv = document.createElement('div');
+                nuevoDiv.className = 'form-group';
+                nuevoDiv.id = 'contenedor-selector-fase';
+                nuevoDiv.innerHTML = `
+                    <label>Fase de Conexión (Reparto Cargas):</label>
+                    <select id="id-fase">
+                        <option value="L1" selected>Fase R (L1)</option>
+                        <option value="L2">Fase S (L2)</option>
+                        <option value="L3">Fase T (L3)</option>
+                    </select>
+                `;
+                form.insertBefore(nuevoDiv, divBotones);
+            }
+        } else {
+            if (contenedorFase) contenedorFase.remove();
+        }
     }
+
+function renderizarControlesID() {
+    const contenedor = document.getElementById('lista-gestion-ids');
+    contenedor.innerHTML = "";
+    const sistemaDI = document.getElementById('di-sistema').value;
+
+    diferenciales.forEach((d, idx) => {
+        const div = document.createElement('div');
+        div.className = 'item-row';
+        
+        // Si es trifásico, añade una etiqueta visual de color indicando la fase
+        let txtFase = '';
+        if (sistemaDI === 'trifasico') {
+            const faseActual = d.fase || 'L1';
+            let colorEtiqueta = '#ef4444'; // Rojo para R
+            if (faseActual === 'L2') colorEtiqueta = '#3b82f6'; // Azul para S
+            if (faseActual === 'L3') colorEtiqueta = '#10b981'; // Verde para T
+            txtFase = ` <span style="background:${colorEtiqueta}; color:white; padding:1px 4px; border-radius:3px; font-size:9px; font-weight:bold; margin-left:5px;">${faseActual}</span>`;
+        }
+
+        div.innerHTML = `<div><strong>${d.nombre}</strong>${txtFase}<br><span style="font-size:10px; color:#64748b;">${d.valores}</span></div>
+                         <div><button class="btn-mini btn-edit" onclick="editarID(${idx})">✏️</button><button class="btn-mini btn-del" onclick="eliminarID(${idx})">🗑️</button></div>`;
+        contenedor.appendChild(div);
+    });
+}
 
     function renderizarControlesCircuitos() {
         const contenedor = document.getElementById('lista-gestion-circuitos');
+        if(!contenedor) return;
         contenedor.innerHTML = "";
         if (ordenCircuitos.length === 0) { contenedor.innerHTML = "<p style='font-size:12px; color:#64748b; text-align:center;'>Sin circuitos.</p>"; return; }
         ordenCircuitos.forEach((c, idx) => {
             const div = document.createElement('div');
             div.className = 'item-row';
             let opcionesDiferenciales = diferenciales.map(d => `<option value="${d.id}" ${c.diferencialAsignado === d.id ? 'selected' : ''}>${d.nombre}</option>`).join('');
-            div.innerHTML = `<div><strong>${c.id}</strong><div class="order-btns"><button onclick="moverPosicion(${idx}, -1)">🔼</button><button onclick="moverPosicion(${idx}, 1)">🔽</button></div></div>
+            div.innerHTML = `<div><strong>${c.id}</strong><br><div class="order-btns"><button onclick="moverPosicion(${idx}, -1)">◀</button><button onclick="moverPosicion(${idx}, 1)">▶</button></div></div>
                              <div><select onchange="cambiarDiferencialCircuito('${c.id}', this.value)" style="font-size:11px; padding:4px;">${opcionesDiferenciales}</select></div>`;
             contenedor.appendChild(div);
         });
@@ -582,94 +982,137 @@
 
     function cambiarDiferencialCircuito(circuitoId, nuevoIdDiferencial) {
         let c = ordenCircuitos.find(item => item.id === circuitoId);
-        if (c) { c.diferencialAsignado = nuevoIdDiferencial; guardarEstadoLocal(); construirUnifilarGrafico(); }
+        if (c) { c.diferencialAsignado = nuevoIdDiferencial; guardarEstadoLocal(); actualizarDI(); }
     }
 
     function moverPosicion(index, direccion) {
         let nuevaPos = index + direccion;
         if (nuevaPos >= 0 && nuevaPos < ordenCircuitos.length) {
             let temp = ordenCircuitos[index]; ordenCircuitos[index] = ordenCircuitos[nuevaPos]; ordenCircuitos[nuevaPos] = temp;
-            renderizarControlesCircuitos(); construirUnifilarGrafico();
+            renderizarControlesCircuitos(); actualizarDI();
         }
     }
 
-    function construirUnifilarGrafico() {
-        const lienzo = document.getElementById('esquema-unifilar-dinamico');
-        lienzo.innerHTML = "";
-        let diferencialesActivos = diferenciales.filter(d => ordenCircuitos.some(c => c.diferencialAsignado === d.id));
-
-        diferencialesActivos.forEach(d => {
-            let hijos = ordenCircuitos.filter(c => c.diferencialAsignado === d.id);
-            const divDiferencial = document.createElement('div');
-            divDiferencial.className = 'bloque-diferencial';
-
-            let htmlBloque = `
-                <div class="id-caja">
-                    ${SIMBOLO_DIFERENCIAL_SVG}
-                    <div>
-                        <strong style="color:#0f172a; display:block; font-size:13px; text-transform:uppercase;">${d.nombre}</strong>
-                        <span style="font-size:11px; font-weight:700; color:#6d28d9; display:block; margin-top:2px;">Inter. Diferencial</span>
-                        <span style="font-size:11px; font-weight:600; color:#475569;">I<sub>n</sub>: ${d.valores}</span>
-                    </div>
-                </div>
-                <div class="subembarrado">
-            `;
-
-            hijos.forEach(h => {
-                let caida = h.res_calculados ? h.res_calculados.caida_porcentaje : '0.00';
-                htmlBloque += `
-                    <div class="columna-circuito">
-                        <div class="pia-dispositivo">
-                            ${SIMBOLO_MAGNETOTERMICO_SVG}
-                            <div>
-                                <strong style="display:block; color:#0f172a; font-size:13px;">PIA ${h.magneto}A</strong>
-                                <span style="font-size:10px; font-weight:700; color:#b45309; display:block;">Curva C</span>
-                                <span style="font-size:9px; font-weight:normal; color:#64748b; display:block;">I<sub>cn</sub>: 6 kA</span>
-                            </div>
-                        </div>
-                        <div class="cable-bajada"></div>
-                        <div class="bloque-informacion">
-                            <div class="titulo-c">${h.id}</div>
-                            <div><span>Potencia:</span> <strong>${h.potencia} W</strong></div>
-                            <div><span>Sección:</span> <strong>${h.seccion} mm²</strong></div>
-                            <div><span>Longitud:</span> <strong>${h.longitud} m</strong></div>
-                            <div style="color:#0f766e; margin-top:6px; font-weight:700; border-top:1px dashed #e2e8f0; padding-top:4px;">
-                                <span>ΔU (%):</span> <span>${caida}%</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            htmlBloque += `</div>`;
-            divDiferencial.innerHTML = htmlBloque;
-            lienzo.appendChild(divDiferencial);
-        });
+    function exportarPDF() {
+        const datosEnvio = {
+            di: JSON.parse(localStorage.getItem('unifilar_di')) || configDI,
+            iga: JSON.parse(localStorage.getItem('unifilar_iga')) || configIGA,
+            diferenciales: diferenciales,
+            mapeo: JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {},
+            circuitos: JSON.parse(localStorage.getItem('unifilar_orden_circuitos')) || ordenCircuitos || []
+        };
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/exportar_unifilar_pdf';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'datos';
+        input.value = JSON.stringify(datosEnvio);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
     }
-	// AÑADE ESTA FUNCIÓN AL FINAL DE TU SCRIPT
-function exportarPDF() {
-    // Recopilamos el estado actual de la Derivación Individual e IGA
-    const datosEnvio = {
-        di: JSON.parse(localStorage.getItem('unifilar_di')) || configDI,
-        iga: JSON.parse(localStorage.getItem('unifilar_iga')) || configIGA,
-        diferenciales: diferenciales,
-        mapeo: JSON.parse(localStorage.getItem('unifilar_mapeo_circuitos')) || {}
-    };
+	// --- FUNCIÓN 1: EXPORTAR A IMAGEN (PNG ALTA RESOLUCIÓN) ---
+function exportarComoImagen() {
+    const svgElement = document.getElementById('cad-canvas');
+    if (!svgElement) return;
 
-    // Creamos un formulario temporal dinámico para hacer un POST directo y descargar el archivo binario
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/exportar_unifilar_pdf';
+    // Obtener las dimensiones del SVG original
+    const viewBox = svgElement.getAttribute('viewBox');
+    let width = 1200; // Valores por defecto por si acaso
+    let height = 700;
     
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'datos';
-    input.value = JSON.stringify(datosEnvio);
+    if (viewBox) {
+        const partes = viewBox.split(' ');
+        width = parseFloat(partes[2]);
+        height = parseFloat(partes[3]);
+    }
+
+    // Convertir el SVG a un String de datos XML
+    const xml = new XMLSerializer().serializeToString(svgElement);
+    const svg64 = btoa(unescape(encodeURIComponent(xml)));
+    const b64Start = 'data:image/svg+xml;base64,';
+    const image64 = b64Start + svg64;
+
+    // Crear una imagen virtual en memoria
+    const img = new Image();
+    img.src = image64;
     
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
+    img.onload = function() {
+        // Creamos un canvas con un multiplicador de densidad (x2) para que se vea estilo plano de alta definición
+        const canvas = document.createElement('canvas');
+        const escalaPro = 2; 
+        canvas.width = width * escalaPro;
+        canvas.height = height * escalaPro;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.scale(escalaPro, escalaPro);
+
+        // Dibujar el fondo del plano según el modo actual
+        ctx.fillStyle = modoImpresionActivo ? "#ffffff" : "#14191e";
+        ctx.fillRect(0, 0, width, height);
+
+        // Renderizar el SVG sobre el canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Forzar la descarga del archivo PNG en el navegador
+        const urlDescarga = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `Plano_Unifilar_${Date.now()}.png`;
+        link.href = urlDescarga;
+        link.click();
+    };
+}
+
+// --- FUNCIÓN 2: EXPORTAR A PLANO PDF (FORMATO DIN A4 / A3 HORIZONTAL) ---
+function exportarComoPDF() {
+    const svgElement = document.getElementById('cad-canvas');
+    if (!svgElement) return;
+
+    const viewBox = svgElement.getAttribute('viewBox');
+    let width = 1200;
+    let height = 700;
+    if (viewBox) {
+        const partes = viewBox.split(' ');
+        width = parseFloat(partes[2]);
+        height = parseFloat(partes[3]);
+    }
+
+    const xml = new XMLSerializer().serializeToString(svgElement);
+    const svg64 = btoa(unescape(encodeURIComponent(xml)));
+    const image64 = 'data:image/svg+xml;base64,' + svg64;
+
+    const img = new Image();
+    img.src = image64;
+
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(2, 2);
+
+        ctx.fillStyle = modoImpresionActivo ? "#ffffff" : "#14191e";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const imgData = canvas.toDataURL('image/png');
+
+        // Accedemos a jsPDF usando el namespace correcto de su versión moderna
+        const { jsPDF } = window.jspdf;
+        
+        // Creamos un PDF apaisado ('l' = landscape) adaptado al tamaño de nuestro plano
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [width, height]
+        });
+
+        // Insertamos la imagen y guardamos
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.save(`Esquema_Unifilar_${Date.now()}.pdf`);
+    };
 }
 </script>
 </body>

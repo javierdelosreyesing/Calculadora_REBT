@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculador Multizona y Multisustancia ATEX - UNE-EN 60079-10</title>
+    <style>
+        :root {
+            --primary-dark: #0f2537;
+            --primary-light: #1e293b;
+            --accent-color: #16a085;
+            --accent-hover: #117a65;
+            --bg-workspace: #f1f5f9;
+            --bg-sheet: #ffffff;
+            --border-subtle: #cbd5e1;
+            --danger-badge: #e11d48;
+            --danger-hover: #be123c;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-workspace);
+            color: var(--primary-light);
+            display: flex;
+            gap: 20px;
+            height: 95vh;
+            box-sizing: border-box;
+        }
+
+        /* PANEL DE CONTROL (IZQUIERDA) */
+        .panel-config {
+            flex: 1;
+            max-width: 490px;
+            background: var(--bg-sheet);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        /* PANEL PREVIEW FLUIDO (DERECHA) */
+        .panel-preview {
+            flex: 1.5;
+            background: var(--bg-sheet);
+            border-radius: 8px;
+            border-left: 1px solid var(--border-subtle);
+            padding: 30px 40px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 { 
+            color: var(--primary-dark); 
+            margin-top: 0; 
+            border-bottom: 2px solid var(--primary-dark); 
+            padding-bottom: 8px; 
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .seccion-bloque {
+            background: #f8fafc;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 5px;
+        }
+
+        .seccion-titulo {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .contenedor-botones-titulo {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ELEMENTOS DE FORMULARIO */
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+        label { font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .form-control {
+            padding: 9px 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 5px;
+            font-size: 13.5px;
+            color: var(--primary-light);
+            background-color: #ffffff;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* BOTONES */
+        .btn-small { padding: 6px 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: none; transition: background 0.2s; }
+        .btn-primary { background-color: var(--accent-color); color: white; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-danger { background-color: var(--danger-badge); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        
+        .btn-exportar {
+            background-color: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .btn-exportar:hover { background-color: #1e293b; }
+
+        /* LISTAS DINÁMICAS */
+        .lista-items { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; background: white; border: 1px solid var(--border-subtle); border-radius: 4px; padding: 6px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 4px 8px; background: #f1f5f9; border-radius: 3px; }
+
+        /* REDACCIÓN TÉCNICA E INFORME */
+        table.tabla-atex { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 12px; }
+        table.tabla-atex th { background-color: var(--primary-dark); color: #ffffff; padding: 10px; border: 1px solid var(--primary-dark); text-transform: uppercase; font-size: 10.5px; }
+        table.tabla-atex td { padding: 10px; border: 1px solid #e2e8f0; text-align: center; background-color: #ffffff; }
+        table.tabla-atex tr:nth-child(even) td { background-color: #f8fafc; }
+        
+        .badge-zona { background-color: var(--danger-badge); color: #ffffff; padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-block; font-size: 11px; }
+        .badge-sustancia { background-color: #64748b; color: white; padding: 1px 5px; border-radius: 3px; font-size: 10px; margin-right: 3px; display: inline-block;}
+
+        .bloque-matematico {
+            background: #f8fafc;
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12.5px;
+            color: #334155;
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+	
+    </style>
+</head>
+<body>
+
+    <div class="panel-config">
+        <h2>Ingeniería ATEX Multilocal</h2>
+        
+        <div class="seccion-bloque">
+            <div class="seccion-titulo">
+                <span>1. Locales del Proyecto</span>
+                <div class="contenedor-botones-titulo">
+                    <button class="btn-small btn-primary" onclick="crearNuevoLocal()">+ Nuevo</button>
+                    <button class="btn-small btn-danger" onclick="eliminarLocalActual()">Eliminar Local</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="select_local_activo">Seleccionar Local a Configurar / Editar</label>
+                <select id="select_local_activo" class="form-control" onchange="cambiarLocalActivo()">
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="local_nombre">Nombre o Identificador del Local</label>
+                    <input type="text" id="local_nombre" class="form-control" oninput="actualizarDatosLocal()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="select_tipo_normativo">Tipo de Local Normativo (ITC-BT-29)</label>
+                <select id="select_tipo_normativo" class="form-control" onchange="aplicarPlantillaLocalNormativo()">
+                    <option value="personalizado">--- Local Personalizado / No tipificado ---</option>
+                    <option value="garaje">Aparcamiento / Garaje Subterráneo (>5 vehículos)</option>
+                    <option value="gasolinera">Estación de Servicio (Zona Surtidores/Tanques)</option>
+                    <option value="baterias">Cuarto de Carga de Baterías (SAI / Carretillas)</option>
+                    <option value="calderas">Sala de Calderas / Regulación de Gas Natural o GLP</option>
+                    <option value="EDAR">Planta Depuradora (EDAR - Digestores/Bombeo)</option>
+                    <option value="carpinteria">Industria de la Madera (Silos/Lijado de Serrín)</option>
+                    <option value="pintura">Cabina de Pintura / Almacén de Disolventes</option>
+                </select>
+                <div id="contenedor_preguntas_especificas" style="margin-top: 15px; padding: 15px; background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px; display: none;">
+                    </div>
+            </div>
+        </div>
+		
+        <div class="seccion-bloque">
+            <div class="seccion-titulo">2. Geometría General</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="largo">Largo (m)</label>
+                    <input type="number" id="largo" class="form-control" value="6" min="1" oninput="actualizarDatosLocal()">
+                </div>
+                <div class="form-group">
+                    <label for="ancho">Ancho (m)</label>
+                    <input type="number" id="ancho" class="form-control" value="4" min="1" oninput="actualizarDatosLocal()">
+                </div>
+                <div class="form-group">
+                    <label for="alto">Alto (m)</label>
+                    <input type="number" id="alto" class="form-control" value="3" min="1" step="0.1" oninput="actualizarDatosLocal()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="tipo_vent">Clasificación de Ventilación Operativa</label>
+                <select id="tipo_vent" class="form-control" onchange="actualizarDatosLocal()">
+                    <option value="natural">Ventilación Puramente Natural</option>
+                    <option value="forzada">Ventilación Puramente Mecánica / Forzada</option>
+                    <option value="mixta">Mixta / Híbrida (Natural + Forzada)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="vel_aire">Velocidad de aire de diseño para Vent. Natural (m/s)</label>
+                <input type="number" id="vel_aire" class="form-control" value="0.5" step="0.1" min="0.1" oninput="actualizarDatosLocal()">
+            </div>
+        </div>
+
+        <div class="seccion-bloque">
+            <div class="seccion-titulo">3. Elementos / Equipos de Ventilación</div>
+            <div class="lista-items" id="lista_vent_sistemas" style="max-height: 100px;">
+            </div>
+            <div class="form-row" style="margin-top:10px; align-items: flex-end;">
+                <div class="form-group" style="flex:1.5; margin-bottom:0;">
+                    <label for="input_vent_tipo">Tipo Elemento</label>
+                    <select id="input_vent_tipo" class="form-control" onchange="conmutarInputsVentilacion()">
+                        <option value="Ventana Exterior">Ventana Exterior (Natural)</option>
+                        <option value="Rejilla de Admisión">Rejilla de Admisión (Natural)</option>
+                        <option value="Lucernario Cenital">Lucernario Cenital (Natural)</option>
+                        <option value="Extractor Mecánico Ex">Extractor Mecánico Ex (Mecánico)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1; margin-bottom:0;" id="wrapper_vent_area">
+                    <label for="input_vent_area">Área (m²)</label>
+                    <input type="number" id="input_vent_area" class="form-control" value="0.5" step="0.05" min="0">
+                </div>
+                <div class="form-group" style="flex:1; margin-bottom:0; display:none;" id="wrapper_vent_caudal">
+                    <label for="input_vent_caudal">Caudal (m³/h)</label>
+                    <input type="number" id="input_vent_caudal" class="form-control" value="1200" min="0">
+                </div>
+                <button class="btn-small btn-primary" style="height:38px;" onclick="agregarSistemaVentilacion()">+</button>
+            </div>
+        </div>
+
+        <div class="seccion-bloque">
+            <div class="seccion-titulo">4. Sustancias Inflamables Coexistentes</div>
+            <div class="lista-items" id="lista_sustancias_locales" style="max-height: 100px;">
+            </div>
+            <div class="form-row" style="margin-top:10px; align-items: flex-end;">
+                <div class="form-group" style="flex:2; margin-bottom:0;">
+                    <label for="select_sustancia_base">Sustancia Química</label>
+                    <select id="select_sustancia_base" class="form-control">
+                        <option value="propano">Propano (Gas - IIA - T4)</option>
+                        <option value="gasolina">Vapores de Gasolina (Vapor - IIA - T3)</option>
+                        <option value="hidrogeno">Hidrógeno (Gas - IIC - T1)</option>
+                        <option value="acetona">Acetona (Vapor - IIA - T1)</option>
+                        <option value="serrin">Polvo de Madera / Serrín (Polvo - IIIB - 200°C)</option>
+                        <option value="monoxido">Monóxido de Carbono (Gas - IIB - T1)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1.2; margin-bottom:0;">
+                    <label for="select_escape_base">Grado Escape</label>
+                    <select id="select_escape_base" class="form-control">
+                        <option value="Secundario">Secundario</option>
+                        <option value="Primario">Primario</option>
+                        <option value="Continuo">Continuo</option>
+                    </select>
+                </div>
+                <button class="btn-small btn-primary" style="height:38px;" onclick="agregarSustanciaALocal()">+</button>
+            </div>
+        </div>
+
+        <button class="btn-exportar" onclick="enviarAMemoriaProyecto()">Consolidar Proyecto en Memoria Central</button>
+    </div>
+
+    <div class="panel-preview">
+        <div style="margin-bottom: 24px;">
+            <strong style="font-size: 16px; text-transform: uppercase; color: var(--primary-dark); display: block;">Estudio de Clasificación de Emplazamientos ATEX (Multilocal)</strong>
+            <span style="font-size: 12px; color: #64748b;">Conforme a ITC-BT-29 y Procedimientos Analíticos de la Norma UNE-EN 60079-10-1/2</span>
+        </div>
+
+        <div id="render_texto_ingenieria" class="contenido-informe">
+        </div>
+    </div>
+
+<script>
+    const catalogoSustancias = {
+        propano: { nombre: 'Propano', grupo: 'IIA', tempValor: 4, tempStr: 'T4 (135°C)', tipo: 'gas', lie: 0.031 },
+        gasolina: { nombre: 'Vapores de Gasolina', grupo: 'IIA', tempValor: 3, tempStr: 'T3 (200°C)', tipo: 'gas', lie: 0.044 },
+        hidrogeno: { nombre: 'Hidrógeno', grupo: 'IIC', tempValor: 1, tempStr: 'T1 (450°C)', tipo: 'gas', lie: 0.0034 },
+        acetona: { nombre: 'Acetona', grupo: 'IIA', tempValor: 1, tempStr: 'T1 (450°C)', tipo: 'gas', lie: 0.060 },
+        serrin: { nombre: 'Polvo de Serrín', grupo: 'IIIB', tempValor: 200, tempStr: 'T = 200°C', tipo: 'polvo', lie: 0.040 },
+        monoxido: { nombre: 'Monóxido de Carbono (CO)', grupo: 'IIB', tempValor: 1, tempStr: 'T1 (450°C)', tipo: 'gas', lie: 0.146 }
+    };
+
+    const localesNormativos = {
+        personalizado: { nombre: "--- Local Personalizado / No tipificado ---", sustancia: "propano", escape: "Secundario", tipo_vent: "natural", variables: [] },
+        garaje: { 
+            nombre: "Aparcamiento / Garaje Subterráneo (>5 vehículos)", 
+            sustancia: "gasolina", escape: "Secundario", tipo_vent: "forzada",
+            variables: [
+                { id: "garaje_plazas", label: "Número de Plazas de Aparcamiento", type: "number", placeholder: "Ej. 20", ayuda: "Norma: CTE DB-HS 3 exige un mínimo de 120 l/s por plaza (~432 m³/h por plaza)." },
+                { id: "garaje_superficie", label: "Superficie útil del Garaje (m²)", type: "number", placeholder: "Ej. 300", ayuda: "Se utilizará junto con la altura para calcular el volumen total y la persistencia de los gases." }
+            ]
+        },
+        baterias: { 
+            nombre: "Cuarto de Carga de Baterías (SAI / Carretillas)", 
+            sustancia: "hidrogeno", escape: "Primario", tipo_vent: "forzada",
+            variables: [
+                { id: "baterias_potencia", label: "Potencia Total de Cargadores (kW)", type: "number", placeholder: "Ej. 30", ayuda: "Cálculo según UNE-EN 50272: El desprendimiento de Hidrógeno es proporcional a la corriente de carga." }
+            ]
+        },
+        calderas: { 
+            nombre: "Sala de Calderas / Regulación de Gas Natural o GLP", 
+            sustancia: "propano", escape: "Secundario", tipo_vent: "natural",
+            variables: [
+                { id: "calderas_potencia", label: "Potencia Térmica de la Caldera (kW)", type: "number", placeholder: "Ej. 150", ayuda: "Norma UNE 60601: Exige una sección mínima de ventilación natural alta y baja basada en la potencia útil." }
+            ]
+        },
+        carpinteria: { 
+            nombre: "Industria de la Madera (Silos/Lijado de Serrín)", 
+            sustancia: "serrin", escape: "Primario", tipo_vent: "forzada",
+            variables: [
+                { id: "carpinteria_limpieza", label: "Frecuencia de Limpieza del Polvo", type: "select", options: ["Excelente (Capas < 2mm)", "Media (Capas de 2 a 5mm)", "Mala (Capas > 5mm)"], ayuda: "UNE-EN 60079-10-2: Una mala limpieza puede transformar una Zona 22 en una Zona 21 permanente." }
+            ]
+        }
+    };
+    
+    let proyectoATEX = [
+        {
+            id: 1,
+            nombre: "Cuarto Técnico de Regulación de Gas",
+            tipo_vent: "mixta",
+            vel_aire: 0.5,
+            largo: 5, ancho: 4, alto: 3,
+            sistemas_ventilacion: [
+                { tipo: "Ventana Exterior", area: 1.2, caudal: 0, esNatural: true },
+                { tipo: "Extractor Mecánico Ex", area: 0, caudal: 1500, esNatural: false }
+            ],
+            sustancias: [
+                { key: 'propano', escape: 'Secundario' }
+            ]
+        }
+    ];
+
+    let idLocalActivo = 1;
+
+    function inicializar() {
+        refrescarSelectorLocales();
+        cargarDatosLocalEnFormulario();
+        ejecutarMatrizCalculo();
+    }
+
+    function conmutarInputsVentilacion() {
+        const inputTipo = document.getElementById('input_vent_tipo');
+        if(!inputTipo) return;
+        const tipo = inputTipo.value;
+        const wrapArea = document.getElementById('wrapper_vent_area');
+        const wrapCaudal = document.getElementById('wrapper_vent_caudal');
+
+        if(wrapArea && wrapCaudal) {
+            if(tipo.includes("Extractor Mecánico")) {
+                wrapArea.style.display = 'none';
+                wrapCaudal.style.display = 'block';
+            } else {
+                wrapArea.style.display = 'block';
+                wrapCaudal.style.display = 'none';
+            }
+        }
+    }
+
+    function refrescarSelectorLocales() {
+        const select = document.getElementById('select_local_activo');
+        if(!select) return;
+        select.innerHTML = "";
+        if (proyectoATEX.length === 0) {
+            select.innerHTML = '<option value="">-- Sin Locales --</option>'; return;
+        }
+        proyectoATEX.forEach(local => {
+            const opt = document.createElement('option');
+            opt.value = local.id; opt.innerText = local.nombre;
+            if(local.id === idLocalActivo) opt.selected = true;
+            select.appendChild(opt);
+        });
+    }
+
+    function crearNuevoLocal() {
+        const nuevoId = proyectoATEX.length > 0 ? Math.max(...proyectoATEX.map(l => l.id)) + 1 : 1;
+        proyectoATEX.push({
+            id: nuevoId,
+            nombre: `Nuevo Emplazamiento Técnico ${nuevoId}`,
+            tipo_vent: "natural",
+            vel_aire: 0.5,
+            largo: 4, ancho: 4, alto: 3,
+            sistemas_ventilacion: [{ tipo: "Ventana Exterior", area: 0.6, caudal: 0, esNatural: true }],
+            sustancias: [{ key: 'propano', escape: 'Secundario' }]
+        });
+        idLocalActivo = nuevoId;
+        refrescarSelectorLocales();
+        cargarDatosLocalEnFormulario();
+        ejecutarMatrizCalculo();
+    }
+
+    function eliminarLocalActual() {
+        if (proyectoATEX.length === 0) return;
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if (!local) return;
+        if (confirm(`¿Eliminar local "${local.nombre}"?`)) {
+            proyectoATEX = proyectoATEX.filter(l => l.id !== idLocalActivo);
+            idLocalActivo = proyectoATEX.length > 0 ? proyectoATEX[0].id : null;
+            refrescarSelectorLocales();
+            cargarDatosLocalEnFormulario();
+            ejecutarMatrizCalculo();
+        }
+    }
+
+    function cambiarLocalActivo() {
+        const val = document.getElementById('select_local_activo').value;
+        idLocalActivo = val ? parseInt(val) : null;
+        cargarDatosLocalEnFormulario();
+        ejecutarMatrizCalculo();
+    }
+
+    function cargarDatosLocalEnFormulario() {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) {
+            document.getElementById('local_nombre').value = "";
+            document.getElementById('lista_sustancias_locales').innerHTML = "";
+            document.getElementById('lista_vent_sistemas').innerHTML = "";
+            return;
+        }
+
+        document.getElementById('local_nombre').value = local.nombre;
+        document.getElementById('tipo_vent').value = local.tipo_vent;
+        document.getElementById('vel_aire').value = local.vel_aire || 0.5;
+        document.getElementById('largo').value = local.largo;
+        document.getElementById('ancho').value = local.ancho;
+        document.getElementById('alto').value = local.alto;
+
+        const selectNormativo = document.getElementById('select_tipo_normativo');
+        if (selectNormativo) {
+            if (local.nombre.includes("Aparcamiento") || local.nombre.includes("Garaje")) selectNormativo.value = "garaje";
+            else if (local.nombre.includes("Batería") || local.nombre.includes("Baterias")) selectNormativo.value = "baterias";
+            else if (local.nombre.includes("Caldera")) selectNormativo.value = "calderas";
+            else if (local.nombre.includes("Madera") || local.nombre.includes("Carpintería") || local.nombre.includes("Carpinter")) selectNormativo.value = "carpinteria";
+            else selectNormativo.value = "personalizado";
+        }
+
+        pintarListaSustanciasLocal();
+        pintarListaSistemasVentilacion();
+        conmutarInputsVentilacion();
+    }
+
+    function pintarListaSustanciasLocal() {
+        const contenedor = document.getElementById('lista_sustancias_locales');
+        if(!contenedor) return;
+        contenedor.innerHTML = "";
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local || local.sustancias.length === 0) {
+            contenedor.innerHTML = "<div style='padding:6px; font-size:12px; color:#64748b;'>Sin sustancias.</div>"; return;
+        }
+        local.sustancias.forEach((sust, index) => {
+            const info = catalogoSustancias[sust.key];
+            if(!info) return;
+            const row = document.createElement('div');
+            row.className = "item-row";
+            row.innerHTML = `<span><strong>${info.nombre}</strong> (${sust.escape})</span><button class="btn-small btn-danger" onclick="eliminarSustanciaDeLocal(${index})">x</button>`;
+            contenedor.appendChild(row);
+        });
+    }
+
+    function pintarListaSistemasVentilacion() {
+        const contenedor = document.getElementById('lista_vent_sistemas');
+        if(!contenedor) return;
+        contenedor.innerHTML = "";
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local || !local.sistemas_ventilacion || local.sistemas_ventilacion.length === 0) {
+            contenedor.innerHTML = "<div style='padding:6px; font-size:12px; color:#64748b;'>Sin sistemas añadidos.</div>"; return;
+        }
+        local.sistemas_ventilacion.forEach((sys, index) => {
+            const row = document.createElement('div');
+            row.className = "item-row";
+            const txt = sys.esNatural ? `${sys.area} m² (Inducido por vel.)` : `${sys.caudal} m³/h`;
+            row.innerHTML = `<span><strong>${sys.tipo}</strong>: ${txt}</span><button class="btn-small btn-danger" onclick="eliminarSistemaVentilacion(${index})">x</button>`;
+            contenedor.appendChild(row);
+        });
+    }
+
+    function agregarSistemaVentilacion() {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+        const tipo = document.getElementById('input_vent_tipo').value;
+        const area = parseFloat(document.getElementById('input_vent_area').value) || 0;
+        const caudal = parseFloat(document.getElementById('input_vent_caudal').value) || 0;
+        const esNatural = !tipo.includes("Extractor Mecánico");
+
+        local.sistemas_ventilacion.push({ tipo, area, caudal, esNatural });
+        pintarListaSistemasVentilacion();
+        ejecutarMatrizCalculo();
+    }
+
+    function eliminarSistemaVentilacion(index) {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+        local.sistemas_ventilacion.splice(index, 1);
+        pintarListaSistemasVentilacion();
+        ejecutarMatrizCalculo();
+    }
+
+    function agregarSustanciaALocal() {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+        const key = document.getElementById('select_sustancia_base').value;
+        const escape = document.getElementById('select_escape_base').value;
+
+        if(!local.sustancias.some(s => s.key === key && s.escape === escape)) {
+            local.sustancias.push({ key, escape });
+            pintarListaSustanciasLocal();
+            ejecutarMatrizCalculo();
+        }
+    }
+
+    function eliminarSustanciaDeLocal(index) {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+        local.sustancias.splice(index, 1);
+        pintarListaSustanciasLocal();
+        ejecutarMatrizCalculo();
+    }
+
+    function actualizarDatosLocal() {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+
+        local.nombre = document.getElementById('local_nombre').value || `Local Técnico ${local.id}`;
+        local.tipo_vent = document.getElementById('tipo_vent').value;
+        local.vel_aire = parseFloat(document.getElementById('vel_aire').value) || 0.5;
+        local.largo = parseFloat(document.getElementById('largo').value) || 1;
+        local.ancho = parseFloat(document.getElementById('ancho').value) || 1;
+        local.alto = parseFloat(document.getElementById('alto').value) || 1;
+
+        const opt = document.querySelector(`#select_local_activo option[value="${local.id}"]`);
+        if(opt) opt.innerText = local.nombre;
+
+        ejecutarMatrizCalculo();
+    }
+
+    function aplicarPlantillaLocalNormativo() {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+
+        const tipoSeleccionado = document.getElementById('select_tipo_normativo').value;
+        const plantilla = localesNormativos[tipoSeleccionado];
+        const contenedor = document.getElementById('contenedor_preguntas_especificas');
+
+        if(!plantilla || tipoSeleccionado === 'personalizado') {
+            if(contenedor) { contenedor.style.display = 'none'; contenedor.innerHTML = ''; }
+            return;
+        }
+
+        document.getElementById('local_nombre').value = plantilla.nombre;
+        local.nombre = plantilla.nombre;
+        document.getElementById('tipo_vent').value = plantilla.tipo_vent;
+        local.tipo_vent = plantilla.tipo_vent;
+        local.sustancias = [{ key: plantilla.sustancia, escape: plantilla.escape }];
+
+        if(contenedor) {
+            contenedor.style.display = 'block';
+            let htmlPreguntas = `<h5 style="margin: 0 0 10px 0; font-size: 12px; color: #1e3a8a; text-transform: uppercase;">Datos Críticos Requeridos por Normativa:</h5>`;
+            
+            plantilla.variables.forEach(v => {
+                htmlPreguntas += `<div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">${v.label}</label>`;
+                
+                if(v.type === 'select') {
+                    htmlPreguntas += `<select id="${v.id}" class="form-control" onchange="calcularCaudalesEspeciales('${tipoSeleccionado}')">`;
+                    v.options.forEach(opt => htmlPreguntas += `<option value="${opt}">${opt}</option>`);
+                    htmlPreguntas += `</select>`;
+                } else {
+                    htmlPreguntas += `<input type="${v.type}" id="${v.id}" class="form-control" placeholder="${v.placeholder}" oninput="calcularCaudalesEspeciales('${tipoSeleccionado}')">`;
+                }
+                
+                htmlPreguntas += `<small style="color: #64748b; font-size: 11px; display:block; margin-top: 2px;">${v.ayuda}</small>
+                </div>`;
+            });
+
+            if(tipoSeleccionado === 'garaje') {
+                htmlPreguntas += `
+                <div style="margin-top:15px; background:#f0f4f8; padding:10px; border-radius:4px; border:1px solid #d1d5db;">
+                    <span style="font-size:11px; font-weight:bold; color:#0f2537; display:block; margin-bottom:6px;">REQUISITOS REGLAMENTARIOS ITC-BT-29:</span>
+                    <label style="display:flex; align-items:center; font-size:11px; margin-bottom:5px; cursor:pointer;">
+                        <input type="checkbox" id="itc_enclavamiento" checked onchange="ejecutarMatrizCalculo()" style="margin-right:6px;"> Enclavamiento con detectores automáticos de Monóxido/Gas.
+                    </label>
+                    <label style="display:flex; align-items:center; font-size:11px; margin-bottom:5px; cursor:pointer;">
+                        <input type="checkbox" id="itc_doble_motor" checked onchange="ejecutarMatrizCalculo()" style="margin-right:6px;"> Disposición de doble ventilador (Motor de reserva / Alternancia).
+                    </label>
+                    <label style="display:flex; align-items:center; font-size:11px; cursor:pointer;">
+                        <input type="checkbox" id="itc_homogeneo" checked onchange="ejecutarMatrizCalculo()" style="margin-right:6px;"> Ausencia acreditada de rincones muertos o fosos sin barrido de aire.
+                    </label>
+                </div>`;
+            }
+
+            contenedor.innerHTML = htmlPreguntas;
+        }
+        
+        pintarListaSustanciasLocal();
+        
+        setTimeout(() => {
+            if(tipoSeleccionado === 'garaje') {
+                if(document.getElementById('garaje_plazas')) document.getElementById('garaje_plazas').value = 20;
+                if(document.getElementById('garaje_superficie')) document.getElementById('garaje_superficie').value = 300;
+            } else if(tipoSeleccionado === 'baterias') {
+                const el = document.getElementById('baterias_potencia');
+                if(el) el.value = 20;
+            } else if(tipoSeleccionado === 'calderas') {
+                const el = document.getElementById('calderas_potencia');
+                if(el) el.value = 100;
+            }
+            calcularCaudalesEspeciales(tipoSeleccionado);
+        }, 50);
+    }
+
+    function calcularCaudalesEspeciales(tipo) {
+        const local = proyectoATEX.find(l => l.id === idLocalActivo);
+        if(!local) return;
+
+        if(tipo === 'garaje') {
+            const elPlazas = document.getElementById('garaje_plazas');
+            const elSuperficie = document.getElementById('garaje_superficie');
+            
+            const plazas = elPlazas ? (parseFloat(elPlazas.value) || 0) : 0;
+            const superficie = elSuperficie ? (parseFloat(elSuperficie.value) || 0) : 300;
+            
+            if(plazas > 0) {
+                const caudalMinimoNormativo = plazas * 432;
+                local.sistemas_ventilacion = [{
+                    tipo: `Extracción Forzada CTE (Mínimo para ${plazas} plazas)`,
+                    esNatural: false,
+                    caudal: caudalMinimoNormativo,
+                    area: 0
+                }];
+                
+                const ladoProporcional = Math.sqrt(superficie);
+                local.largo = ladoProporcional; 
+                local.ancho = ladoProporcional; 
+                local.alto = 3; 
+                
+                if(document.getElementById('largo')) document.getElementById('largo').value = ladoProporcional.toFixed(2);
+                if(document.getElementById('ancho')) document.getElementById('ancho').value = ladoProporcional.toFixed(2);
+                if(document.getElementById('alto')) document.getElementById('alto').value = 3;
+                
+                pintarListaSistemasVentilacion();
+            }
+        }
+
+        if(tipo === 'baterias') {
+            const el = document.getElementById('baterias_potencia');
+            const potencia = el ? (parseFloat(el.value) || 0) : 0;
+            if(potencia > 0) {
+                const caudalMecanicoRecomendado = potencia * 50; 
+                local.sistemas_ventilacion = [{
+                    tipo: `Ventilación Forzada Antideflagrante (SAI / Hidrógeno)`,
+                    esNatural: false,
+                    caudal: caudalMecanicoRecomendado,
+                    area: 0
+                }];
+                pintarListaSistemasVentilacion();
+            }
+        }
+
+        if(tipo === 'calderas') {
+            const el = document.getElementById('calderas_potencia');
+            const potenciaKw = el ? (parseFloat(el.value) || 0) : 0;
+            if(potenciaKw > 0) {
+                const areaCm2 = potenciaKw * 5; 
+                const areaM2 = areaCm2 / 10000; 
+                
+                local.sistemas_ventilacion = [{
+                    tipo: `Rejilla de Ventilación Natural Alta/Baja (UNE 60601)`,
+                    esNatural: true,
+                    area: areaM2,
+                    caudal: 0
+                }];
+                pintarListaSistemasVentilacion();
+            }
+        }
+
+        actualizarDatosLocal();
+    }
+
+    function ejecutarMatrizCalculo() {
+        let htmlCompleto = "";
+        const renderTarget = document.getElementById('render_texto_ingenieria');
+        if(!renderTarget) return;
+
+        if (proyectoATEX.length === 0) {
+            renderTarget.innerHTML = '<p>No hay locales en el proyecto activo.</p>';
+            return;
+        }
+
+        proyectoATEX.forEach(local => {
+            const nombreLower = (local.nombre || "").toLowerCase();
+
+            if (nombreLower.includes("aparcamiento") || nombreLower.includes("garaje")) {
+                htmlCompleto += calcularModuloGaraje(local);
+            } 
+            else if (nombreLower.includes("batería") || nombreLower.includes("baterias")) {
+                htmlCompleto += calcularModuloBaterias(local);
+            } 
+            else if (nombreLower.includes("caldera")) {
+                htmlCompleto += calcularModuloCalderas(local);
+            } 
+            else if (nombreLower.includes("madera") || nombreLower.includes("carpinter")) {
+                htmlCompleto += calcularModuloCarpinteriaPolvo(local);
+            } 
+            else {
+                htmlCompleto += calcularModuloGenerico(local);
+            }
+        });
+
+        renderTarget.innerHTML = htmlCompleto;
+    }
+
+    // =========================================================================
+    // MÓDULO GARAJES ADAPTADO CON MEMORIA COMPLETA INTEgRADA (ITC-BT-29)
+    // =========================================================================
+    function calcularModuloGaraje(local) {
+        const inputLargo = document.getElementById('largo');
+        const inputAncho = document.getElementById('ancho');
+        const inputAlto = document.getElementById('alto');
+
+        const largoReal = (inputLargo && idLocalActivo === local.id) ? (parseFloat(inputLargo.value) || local.largo) : local.largo;
+        const anchoReal = (inputAncho && idLocalActivo === local.id) ? (parseFloat(inputAncho.value) || local.ancho) : local.ancho;
+        const altoReal = (inputAlto && idLocalActivo === local.id) ? (parseFloat(inputAlto.value) || local.alto) : local.alto;
+        
+        const superficieReal = largoReal * anchoReal;
+        const volumen = superficieReal * altoReal;
+        
+        const inputPlazas = document.getElementById('garaje_plazas');
+        const numPlazas = (inputPlazas && idLocalActivo === local.id) ? (parseInt(inputPlazas.value) || 0) : 0;
+        
+        const caudalMinimoCTE = numPlazas * 432; 
+        
+        let caudalMecanicoReal = 0;
+        let caudalNaturalReal = 0;
+        
+        const inputVelAire = document.getElementById('vel_aire');
+        const vEfectivaInterior = (inputVelAire && idLocalActivo === local.id) ? (parseFloat(inputVelAire.value) || 0.5) : (local.vel_aire || 0.5);
+
+        if (local.sistemas_ventilacion && local.sistemas_ventilacion.length > 0) {
+            local.sistemas_ventilacion.forEach(sys => {
+                if (sys.esNatural) {
+                    caudalNaturalReal += (sys.area * vEfectivaInterior * 3600);
+                } else {
+                    caudalMecanicoReal += sys.caudal;
+                }
+            });
+        }
+
+        const caudalTotalDisenado = caudalMecanicoReal + caudalNaturalReal;
+        const renovacionesHora = volumen > 0 ? (caudalTotalDisenado / volumen) : 0;
+
+        // Parámetros de la Gasolina
+        const lieGasolina = 0.044;    
+        const wgGasolina = 0.00005;   
+        const factorSeguridadK = 0.25; 
+        const factorMultiplicadorf = 1.5; 
+
+        const qaSegundos = wgGasolina / (factorSeguridadK * lieGasolina);
+        const qaHoraRequerido = qaSegundos * 3600;
+
+        // CÁLCULO DEL TIEMPO DE PERMANENCIA / PERSISTENCIA (ts) - UNE-EN 60079-10-1
+        let tiempoPersistenciaSegundos = 0;
+        let tiempoPersistenciaTexto = "Inmediato (Sin acumulación)";
+
+        if (renovacionesHora > 0) {
+            const renovacionesPorSegundo = renovacionesHora / 3600;
+            tiempoPersistenciaSegundos = (factorMultiplicadorf / renovacionesPorSegundo) * Math.log(1 / factorSeguridadK);
+            
+            if (tiempoPersistenciaSegundos > 0) {
+                const minutos = Math.floor(tiempoPersistenciaSegundos / 60);
+                const segundos = Math.round(tiempoPersistenciaSegundos % 60);
+                tiempoPersistenciaTexto = minutos > 0 ? `${minutos} min ${segundos} s` : `${segundos} s`;
+            }
+        } else {
+            tiempoPersistenciaTexto = "Infinito (Sin renovación de aire)";
+        }
+
+        // Captura de Checks de la ITC-BT-29
+        const chkEnclavamiento = document.getElementById('itc_enclavamiento') ? document.getElementById('itc_enclavamiento').checked : false;
+        const chkDobleMotor = document.getElementById('itc_doble_motor') ? document.getElementById('itc_doble_motor').checked : false;
+        const chkHomogeneo = document.getElementById('itc_homogeneo') ? document.getElementById('itc_homogeneo').checked : false;
+
+        let zonaAtex = "Zona Segura (NE)";
+        let eplAtex = "-";
+        let colorBadge = "#16a085"; 
+        let dictamenTexto = "";
+
+        const cumpleCaudalCTE = caudalTotalDisenado >= caudalMinimoCTE && caudalTotalDisenado > 0;
+        const esCaudalSuperiorQa = caudalTotalDisenado >= qaHoraRequerido;
+
+        if (!esCaudalSuperiorQa || !cumpleCaudalCTE) {
+            zonaAtex = "Zona 2"; eplAtex = "Gc"; colorBadge = "#e11d48";
+        } else if (!chkEnclavamiento || !chkDobleMotor || !chkHomogeneo) {
+            zonaAtex = "Zona 2 (Por Reglamento)"; eplAtex = "Gc"; colorBadge = "#d35400";
+        } else {
+            zonaAtex = "Zona Segura (NE)"; eplAtex = "-"; colorBadge = "#16a085";
+        }
+
+        // CONSTRUCCIÓN DEL DOCUMENTO DE MEMORIA TÉCNICA FORMAL
+        dictamenTexto = `================================================================================
+ANEXO OFICIAL: JUSTIFICACIÓN ATEX Y CUMPLIMIENTO REBT ITC-BT-29
+================================================================================
+
+1. OBJETO Y ALCANCE
+El objeto del presente documento es realizar la clasificación de áreas con riesgo de incendio o explosión en el emplazamiento destinado a Aparcamiento / Garaje Subterráneo, determinando la posible extensión de atmósferas explosivas de acuerdo con las prescripciones de la ITC-BT-29 del Reglamento Electrotécnico de Baja Tensión (R.D. 842/2002) y siguiendo la metodología analítica de la norma UNE-EN 60079-10-1 vigente.
+
+2. NORMATIVA DE REFERENCIA APLICADA
+- Reglamento Electrotécnico de Baja Tensión (REBT) - Instrucción Técnica ITC-BT-29.
+- UNE-EN 60079-10-1: Clasificación de áreas. Atmósferas explosivas de gas.
+- Código Técnico de la Edificación (CTE) - Documento Básico DB-HS 3 (Calidad del aire interior).
+
+3. FICHA TÉCNICA DE LA SUSTANCIA DE RIESGO
+- Sustancia de referencia evaluada: Vapores de Gasolina / GLP (Mezclas de Hidrocarburos).
+- Límite Inferior de Explosividad (LIE): 44 g/m³ (1,4% en volumen).
+- Densidad relativa al aire: 3,5 (Vapores pesados con tendencia a la acumulación en cotas bajas).
+- Clase de Temperatura / Grupo de Gas: T3 / IIA.
+
+4. MODELADO CINEMÁTICO Y EVALUACIÓN DE LA VENTILACIÓN
+- Fuente de escape considerada: Secundaria (Pérdidas ocasionales o goteos por averías en vehículos).
+- Superficie útil del local: ${superficieReal.toFixed(1)} m² | Altura libre: ${altoReal.toFixed(1)} m | Volumen neto: ${volumen.toFixed(1)} m³.
+- Caudal mínimo exigido por Salubridad (CTE DB-HS 3): ${caudalMinimoCTE.toFixed(0)} m³/h (Basado en ${numPlazas} plazas).
+- Caudal de extracción real implantado en diseño: ${caudalTotalDisenado.toFixed(0)} m³/h.
+- Tasa de renovación horaria alcanzada: ${renovacionesHora.toFixed(1)} renovaciones/hora.
+- Tiempo de Permanencia / Persistencia de los gases (t_s): [ ${tiempoPersistenciaTexto} ].
+  *(Nota: El Anexo B de la norma UNE-EN 60079-10-1 establece que un tiempo de decaimiento inferior a 15-30 minutos ante un escape accidental avala la consideración de riesgo despreciable).*
+
+5. PLIEGO DE CONDICIONES OPERATIVAS EXIgiDAS (ITC-BT-29)
+Para la validez legal del presente dictamen, la instalación eléctrica y mecánica ejecutada en obra debe cumplir obligatoriamente con los siguientes preceptos técnicos:
+A) DISTRIBUCIÓN DE CAnALIZACIONES: Debido a que la densidad de los vapores es superior a la del aire, las rejillas de extracción están distribuidas garantizando que al menos el 50% del caudal de aire sea aspirado a ras de suelo (a menos de 0,5 metros del pavimento), suprimiendo bolsas estancas.
+B) REDUNDAnCIA MECÁnICA: La extracción consta de un sistema duplicado o dividido en líneas independientes con motores conmutables automáticamente, de modo que ante el fallo de un ventilador se mantenga el barrido de seguridad.
+C) ENCLAVAMIENTO DE SEGURIDAD: El arranque de los grupos mecánicos está supeditado automáticamente a una central de detección continua certificada (UNE 23300) que actúa ante presencia de Monóxido/Gas.
+D) CARACTERÍSTICAS EX: Los motores eléctricos integrados directamente en el flujo del aire extraído contarán con modo de protección y marcado oficial ATEX EPL Gc (Categoría 3G).
+
+6. DICTAMEN FINAL DE CLASIFICACIÓN VINCULANTE
+`;
+
+        if (!esCaudalSuperiorQa || !cumpleCaudalCTE) {
+            dictamenTexto += `RECHAZADO / CLASIFICACIÓN IMPERATIVA: ZONA 2 (EPL Gc) EN TODO EL LOCAL.\nMotivo: El caudal de aire real de diseño es insuficiente para asegurar la dilución masiva rápida exigida por ley.`;
+        } else if (!chkEnclavamiento || !chkDobleMotor || !chkHomogeneo) {
+            dictamenTexto += `RESTRICCIÓN REgLAMENTARIA: ZONA 2 (EPL Gc) EN TODO EL GARAJE.\nMotivo: Aunque el balance volumétrico es favorable y disipa el gas en poco tiempo, el establecimiento NO cumple con las salvaguardas de seguridad física y fiabilidad mecánica cualitativas exigidas taxativamente en el apartado 4.2 de la ITC-BT-29. El local mantiene el riesgo latente.`;
+        } else {
+            dictamenTexto += `✓ CERTIFICACIÓN DE EMPLAZAMIENTO NO CLASIFICADO (ZONA SEgURA / EXENTO ATEX).\nMotivo: Se constata matemáticamente que la persistencia de gases inflamables ante una fuga es despreciable (${tiempoPersistenciaTexto}) gracias a la alta renovación forzada instalada. Al haberse verificado positivamente todos los enclavamientos, barridos homogéneos y sistemas de redundancia de motores impuestos por la ITC-BT-29, el garaje se declara legalmente como ZONA SEgURA. Toda la aparellaje eléctrico general del parking queda exento de protección Ex (exceptuando el interior de los conductos de extracción).`;
+        }
+
+        return `
+            <div style="border: 2px solid #0f2537; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                <h4 style="margin-top:0; font-size:15px; color: #0f2537; border-left: 5px solid #16a085; padding-left:10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    CÁLCULO NORMATIVO: GARAJES Y ESTACIONAMIENTOS
+                </h4>
+                <p style="font-size:12px; color:#475569; margin-bottom:15px;">
+                    Evaluación de superficie y persistencia de atmósferas explosivas (<strong>UNE-EN 60079-10-1</strong>) cruzada con las salvaguardas del <strong>REBT ITC-BT-29</strong>.
+                </p>
+                <table style="width:100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1; background:#fafafa;">
+                    <thead>
+                        <tr style="background:#0f2537; color:white; font-size:11px; letter-spacing:0.5px;">
+                            <th style="padding:10px; border:1px solid #cbd5e1; text-align:left; width:40%;">PARÁMETRO REGLAMENTARIO</th>
+                            <th style="padding:10px; border:1px solid #cbd5e1; text-align:center; width:20%;">UMBRAL MÍNIMO</th>
+                            <th style="padding:10px; border:1px solid #cbd5e1; text-align:center; width:20%;">VALOR CALCULADO</th>
+                            <th style="padding:10px; border:1px solid #cbd5e1; text-align:center; width:20%;">VALIDACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:left;"><strong>Geometría del Aparcamiento</strong><br><span style="font-size:10px; color:#64748b;">Superficie asignada por usuario</span></td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; color:#64748b;">Área Variable</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:#0f2537;">${superficieReal.toFixed(1)} m²</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; color:#64748b;">Vol: ${volumen.toFixed(0)} m³</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:left;"><strong>Caudal de Ventilación Forzada</strong><br><span style="font-size:10px; color:#64748b;">120 l/s por plaza (${numPlazas} pl.)</span></td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:500; color:#475569;">${caudalMinimoCTE.toFixed(0)} m³/h</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:#0f2537;">${caudalTotalDisenado.toFixed(0)} m³/h</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:${cumpleCaudalCTE ? '#16a085' : '#e11d48'};">${cumpleCaudalCTE ? 'CTE CUMPLE' : '⚠ RECHAZADO'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:left;"><strong>Tiempo de Permanencia / Persistencia ($t_s$)</strong><br><span style="font-size:10px; color:#64748b;">Tiempo de evacuación post-escape (Anexo B)</span></td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; color:#64748b;">Decaimiento Exp.</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:#2980b9;">${tiempoPersistenciaTexto}</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; color:#475569; font-weight:500;">${renovacionesHora.toFixed(1)} ren/h</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:left;"><strong>Garantías de Diseño (ITC-BT-29)</strong><br><span style="font-size:10px; color:#64748b;">Redundancia + Enclavamientos + Barrido</span></td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; color:#475569;">3 / 3 Checks</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:#1e293b;">${(chkEnclavamiento?1:0)+(chkDobleMotor?1:0)+(chkHomogeneo?1:0)} / 3</td>
+                            <td style="padding:10px; border:1px solid #e2e8f0; text-align:center; font-weight:bold; color:${(chkEnclavamiento && chkDobleMotor && chkHomogeneo) ? '#16a085' : '#e67e22'};">${(chkEnclavamiento && chkDobleMotor && chkHomogeneo) ? 'FIABLE' : '⚠ RESTRICCIÓN'}</td>
+                        </tr>
+                        <tr style="background:#f1f5f9; font-size:13px;">
+                            <td style="padding:12px; border:1px solid #cbd5e1; text-align:left;"><strong>CLASIFICACIÓN FINAL DEL EMPLAZAMIENTO</strong></td>
+                            <td style="padding:12px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;" colspan="2"><span style="padding:4px 10px; border-radius:4px; color:#fff; font-weight:bold; background:${colorBadge}; font-size:11px; display:inline-block; letter-spacing:0.5px;">${zonaAtex}</span></td>
+                            <td style="padding:12px; border:1px solid #cbd5e1; text-align:center; font-weight:bold; color:#0f2537; font-size:11px;">EPL: ${eplAtex}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <strong style="font-size:10px; text-transform:uppercase; color:#475569; display:block; margin-top:12px; letter-spacing:0.5px;">Justificación Técnica para la Memoria de Proyecto (Listo para Copiar):</strong>
+                <textarea readonly style="width:100%; height:250px; background:#f8fafc; padding:12px; border-radius:4px; border:1px solid #e2e8f0; font-family:monospace; font-size:11px; color:#334155; line-height:1.4; margin-top:5px; resize:vertical;">${dictamenTexto}</textarea>
+            </div>
+        `;
+    }
+
+    function calcularModuloBaterias(local) {
+        const volumen = local.largo * local.ancho * local.alto;
+        let qTotal = 0; local.sistemas_ventilacion?.forEach(s => qTotal += s.esNatural ? (s.area * local.vel_aire * 3600) : s.caudal);
+        return generarHTMLTemplate(local.nombre, volumen, local.vel_aire, qTotal, (qTotal/volumen).toFixed(1), "IIC / T1", "Zona 2", "Gc", "Cálculo especializado para salas de acumuladores de Hidrógeno.");
+    }
+
+    function calcularModuloCalderas(local) {
+        const volumen = local.largo * local.ancho * local.alto;
+        let qTotal = 0; local.sistemas_ventilacion?.forEach(s => qTotal += s.esNatural ? (s.area * local.vel_aire * 3600) : s.caudal);
+        return generarHTMLTemplate(local.nombre, volumen, local.vel_aire, qTotal, (qTotal/volumen).toFixed(1), "IIA / T1", "Zona Segura", "-", "Diseño por ventilación natural UNE 60601.");
+    }
+
+    function calcularModuloCarpinteriaPolvo(local) {
+        const volumen = local.largo * local.ancho * local.alto;
+        return generarHTMLTemplate(local.nombre, volumen, local.vel_aire, 0, "N/A", "IIIB / T200°C", "Zona 22", "Dc", "Presencia de polvos combustibles orgánicos (Madera) UNE-EN 60079-10-2.");
+    }
+
+    function calcularModuloGenerico(local) {
+        const volumen = local.largo * local.ancho * local.alto;
+        let qTotal = 0; local.sistemas_ventilacion?.forEach(s => qTotal += s.esNatural ? (s.area * local.vel_aire * 3600) : s.caudal);
+        return generarHTMLTemplate(local.nombre, volumen, local.vel_aire, qTotal, qTotal > 0 ? (qTotal/volumen).toFixed(1) : 0, "IIA / T6", "Zona Segura", "-", "Evaluación genérica estándar.");
+    }
+
+  function generarHTMLTemplate(nombre, volumen, vAire, qTotal, renovaciones, grupoTemp, peorZona, peorEPL, memoriaTexto) {
+    return `
+        <div style="margin-bottom: 25px; font-family: inherit;">
+            
+            <table class="tabla-atex">
+                <thead>
+                    <tr>
+                        <th>Volumen Local</th>
+                        <th>Velocidad Aire</th>
+                        <th>Caudal Total</th>
+                        <th>Tasa Renovación</th>
+                        <th>Grupo / Clase Temp.</th>
+                        <th>Clasificación Final</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>${volumen.toFixed(1)} m³</strong></td>
+                        <td>${vAire} m/s</td>
+                        <td>${qTotal.toFixed(0)} m³/h</td>
+                        <td>${renovaciones.toFixed(1)} ren/h</td>
+                        <td><span class="badge-sustancia" style="margin:0; padding:3px 6px;">${grupoTemp}</span></td>
+                        <td><span class="badge-zona">${peorZona} (EPL ${peorEPL})</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px; white-space: pre-line; line-height: 1.6; font-size: 13.5px; color: #1e293b; font-family: inherit; text-align: justify;">
+                ${memoriaTexto}
+            </div>
+
+        </div>
+    `;
+}
+
+// Esta función se mantiene igual, pero ahora 'innerHTML' recopilará el HTML limpio sin etiquetas <pre>
+function enviarAMemoriaProyecto() {
+    const contenidoHTML = document.getElementById('render_texto_ingenieria').innerHTML;
+    
+    if (!contenidoHTML || contenidoHTML.trim() === "") {
+        alert("No hay datos de cálculo disponibles para enviar.");
+        return;
+    }
+
+    // Preparamos el paquete de datos
+    const paquete = {
+        alcance: "si",
+        check_garaje: true, 
+        contenido: contenidoHTML
+    };
+
+    // Enviamos los datos a Python mediante una petición POST
+    fetch('http://localhost:5000/api/guardar-atex', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(paquete)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === "success") {
+            alert("✔ Memoria técnica consolidada y enviada al servidor Python.");
+        } else {
+            alert("❌ Error en el servidor: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("❌ Error de conexión con el servidor Flask.");
+    });
+}
+
+    window.onload = function() { inicializar(); };
+</script>
+</body>
+</html>

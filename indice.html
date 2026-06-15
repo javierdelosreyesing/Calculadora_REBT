@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Técnica REBT - Inicio</title>
+    <style>
+        :root {
+            --primary-color: #0f2537;       /* Azul profundo corporativo */
+            --secondary-color: #16a085;     /* Verde REBT */
+            --accent-color: #e67e22;        /* Naranja Seguridad Industrial */
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a5f 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        /* Contenedor Autenticación */
+        .auth-card {
+            background: var(--card-bg);
+            padding: 35px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Pestañas de Navegación del Formulario */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            margin-bottom: -2px;
+        }
+
+        .form-group {
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(22, 160, 133, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background-color: #117a65; }
+
+        .msg-box {
+            font-size: 13px;
+            margin-top: 15px;
+            display: none;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .msg-error { color: #e74c3c; background-color: #fde8e8; }
+        .msg-success { color: #27ae60; background-color: #e8f8f5; }
+
+        /* ==================== PANEL DE CONTROL (DASHBOARD) ==================== */
+        .dashboard-container {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            background: var(--bg-color);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-sizing: border-box;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 35px;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 26px;
+        }
+
+        .btn-logout {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .module-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            box-sizing: border-box;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .module-card h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .module-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .btn-go {
+            align-self: flex-start;
+            padding: 10px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        .btn-mtd { background-color: var(--secondary-color); }
+        .btn-ebss { background-color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card" id="authCard">
+        
+        <div style="margin-bottom: 25px; text-align: center;">
+            <svg width="75" height="75" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.12));">
+                <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#0f2537" stroke="#16a085" stroke-width="3"/>
+                <path d="M25,65 Q35,55 50,65 T75,65" stroke="#1e3a5f" stroke-width="2" fill="none" opacity="0.5"/>
+                <polygon points="55,18 28,52 48,52 41,82 70,45 49,45" fill="#f39c12"/>
+                <circle cx="50" cy="5" r="3" fill="#16a085"/>
+                <circle cx="50" cy="95" r="3" fill="#16a085"/>
+            </svg>
+            <h2 style="margin: 8px 0 2px 0; font-size: 19px; color: #0f2537; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                SISTEMAS REBT
+            </h2>
+            <div style="font-size: 10px; color: #16a085; font-weight: bold; letter-spacing: 2.5px; text-transform: uppercase;">
+                Plataforma de Ingeniería
+            </div>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="tab-btn active" id="tabLogin" onclick="cambiarPestana('login')">Entrar</button>
+            <button class="tab-btn" id="tabRegistro" onclick="cambiarPestana('registro')">Crear Cuenta</button>
+        </div>
+        
+        <form id="loginForm">
+            <p style="color: #64748b; font-size: 13px; text-align: left; margin-top:0;">Introduzca sus credenciales autorizadas.</p>
+            <div class="form-group">
+                <label for="username">Usuario / Colegiado:</label>
+                <input type="text" id="username" required placeholder="Ej: admin">
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-submit">Ingresar al Sistema</button>
+            <div class="msg-box msg-error" id="loginError">❌ Usuario o contraseña incorrectos</div>
+        </form>
+
+        <form id="registroForm" style="display: none;">
+            <p style="color: #64748b; font-size: 13px; text-align: left; margin-top:0;">Dar de alta un nuevo perfil técnico verificado.</p>
+            <div class="form-group">
+                <label for="reg_username">Nuevo Usuario / Técnico:</label>
+                <input type="text" id="reg_username" required placeholder="Ej: ingeniero_jefe">
+            </div>
+            <div class="form-group">
+                <label for="reg_password">Contraseña de Acceso:</label>
+                <input type="password" id="reg_password" required placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-group">
+                <label for="reg_token" style="color: var(--accent-color);">Código de Autorización de Empresa:</label>
+                <input type="password" id="reg_token" required placeholder="Código privado proporcionado por administración">
+            </div>
+            <button type="submit" class="btn-submit" style="background-color: var(--accent-color);">Registrar e Inicializar Cuenta</button>
+            <div class="msg-box msg-error" id="regError"></div>
+            <div class="msg-box msg-success" id="regSuccess">✓ Cuenta creada. Redirigiendo al acceso...</div>
+        </form>
+    </div>
+
+
+    <div class="dashboard-container" id="dashboardContainer" style="display: none; margin: 20px auto;">
+        
+        <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <svg width="45" height="45" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#0f2537" stroke="#16a085" stroke-width="4"/>
+                    <polygon points="55,18 28,52 48,52 41,82 70,45 49,45" fill="#f39c12"/>
+                </svg>
+                <div>
+                    <h1 style="margin: 0; font-size: 24px; color: var(--primary-color);">Panel Central de Ingeniería</h1>
+                    <span style="color: #64748b; font-size: 13px;">Sesión activa: <strong id="userDisplay" style="color: var(--secondary-color);">---</strong></span>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="ejecutarLogout()">Cerrar Sesión</button>
+        </div>
+
+        <div id="seccionProyectos" style="background: #ffffff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 25px; font-family: 'Segoe UI', sans-serif;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 15px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 18px; color: #1a202c; font-weight: 600;">📂 Mis Proyectos de Ingeniería</h2>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: #718096;">Selecciona un proyecto activo o crea uno nuevo para trabajar en él</p>
+                </div>
+                <button type="button" onclick="crearNuevoProyectoFlujo()" style="background-color: #16a085; color: white; border: none; padding: 10px 18px; border-radius: 5px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px;">
+                    <span>➕</span> Crear Proyecto Nuevo
+                </button>
+            </div>
+
+            <div id="listaProyectosMensaje" style="text-align: center; padding: 25px; color: #4a5568; font-size: 14px; background: #f7fafc; border-radius: 6px; border: 1px dashed #cbd5e0;">
+                🔄 Cargando repositorio seguro de proyectos...
+            </div>
+
+            <table id="tablaProyectos" style="width: 100%; border-collapse: collapse; display: none; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e2e8f0; color: #4a5568; font-size: 12px; font-weight: 700; text-transform: uppercase;">
+                        <th style="padding: 10px;">Nombre del Proyecto Técnico</th>
+                        <th style="padding: 10px;">Fecha de Creación</th>
+                        <th style="padding: 10px; text-align: right;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoTablaProyectos">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modules-grid">
+            
+            <div class="module-card" onclick="window.location.href='/configurador'">
+                <div>
+                    <h3>📄 Memoria Técnica de Diseño</h3>
+                    <p>Configuración de datos generales, cálculo de previsión de cargas, diseño del cuadro general de distribución e ingeniería de circuitos de Baja Tensión.</p>
+                </div>
+                <a href="/configurador" class="btn-go btn-mtd">Abrir Módulo MTD</a>
+            </div>
+
+            <div class="module-card" onclick="window.location.href='/calculos'">
+                <div>
+                    <h3>📊 Módulo de Cálculos</h3>
+                    <p>Cálculos complementarios de líneas de distribución, derivaciones individuales e ingeniería de conductores eléctricos.</p>
+                </div>
+                <a href="/calculos" class="btn-go btn-mtd" style="background-color: #2980b9;">Abrir Cálculos</a>
+            </div>
+
+            <div class="module-card" onclick="window.location.href='/seguridad_salud'">
+                <div>
+                    <h3>🛡️ Seguridad y Salud (EBSS)</h3>
+                    <p>Redacción e inyección automatizada de parámetros preventivos de obra, plazos y evaluación de riesgos operativos bajo el RD 1627/1997.</p>
+                </div>
+                <a href="/seguridad_salud" class="btn-go btn-ebss">Abrir Módulo EBSS</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+function cambiarPestana(tipo) {
+    const formLogin = document.getElementById('loginForm');
+    const formReg = document.getElementById('registroForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabReg = document.getElementById('tabRegistro');
+    
+    // Limpiar alertas previas
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('regError').style.display = 'none';
+    document.getElementById('regSuccess').style.display = 'none';
+
+    if (tipo === 'login') {
+        formLogin.style.display = 'block';
+        formReg.style.display = 'none';
+        tabLogin.classList.add('active');
+        tabReg.classList.remove('active');
+    } else {
+        formLogin.style.display = 'none';
+        formReg.style.display = 'block';
+        tabLogin.classList.remove('active');
+        tabReg.classList.add('active');
+    }
+}
+
+// --- MANEJADOR DE INICIO DE SESIÓN ---
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const usr = document.getElementById('username').value.trim();
+    const psw = document.getElementById('password').value.trim();
+    const errorDiv = document.getElementById('loginError');
+
+    errorDiv.style.display = 'none';
+
+    if (!usr || !psw) {
+        errorDiv.textContent = "❌ Por favor, rellene todos los campos.";
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    try {
+        const respuesta = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ usuario: usr, clave: psw })
+        });
+        
+        const datos = await respuesta.json();
+
+        if (respuesta.ok && datos.status === 'success') {
+            sessionStorage.setItem('sesion_ingeniero', usr);
+            mostrarDashboard(usr);
+        } else {
+            errorDiv.textContent = "❌ " + (datos.message || "Usuario o contraseña incorrectos.");
+            errorDiv.style.display = 'block';
+        }
+    } catch (err) {
+        console.error("Error en petición Fetch login:", err);
+        errorDiv.textContent = "❌ Error de comunicación o caída del servidor local.";
+        errorDiv.style.display = 'block';
+    }
+});
+
+// --- MANEJADOR DE REGISTRO SEGURO (CORREGIDO) ---
+document.getElementById('registroForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const usr = document.getElementById('reg_username').value.trim();
+    const psw = document.getElementById('reg_password').value.trim();
+    const tkn = document.getElementById('reg_token').value.trim(); // Captura el token corporativo
+    const errBox = document.getElementById('regError');
+    const successBox = document.getElementById('regSuccess');
+
+    errBox.style.display = 'none';
+    successBox.style.display = 'none';
+
+    if (!usr || !psw || !tkn) {
+        errBox.textContent = "❌ Por favor, rellene todos los campos de registro.";
+        errBox.style.display = 'block';
+        return;
+    }
+
+    try {
+        // CORRECCIÓN: Apuntamos a la API de registrar-usuario y añadimos el token_corporativo
+        const respuesta = await fetch('/api/registrar-usuario', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario: usr, clave: psw, token_corporativo: tkn })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok && datos.status === 'success') {
+            successBox.style.display = 'block';
+            document.getElementById('registroForm').reset();
+            // Te cambia a la pestaña entrar automáticamente pasados 2 segundos
+            setTimeout(() => cambiarPestana('login'), 2000);
+        } else {
+            // Muestra el mensaje de error real del backend (Ej: Código incorrecto)
+            errBox.textContent = `❌ ${datos.message || 'No se pudo validar el registro.'}`;
+            errBox.style.display = 'block';
+        }
+    } catch (err) {
+        console.error("Error en petición Fetch registro:", err);
+        errBox.textContent = "❌ Error crítico de comunicación con el cortafuegos.";
+        errBox.style.display = 'block';
+    }
+});
+
+// --- LOGOUT COMPLETAMENTE SEGURO ---
+async function ejecutarLogout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+    } catch (e) {
+        console.error("Error destruyendo credenciales de sesión en servidor");
+    }
+    sessionStorage.removeItem('sesion_ingeniero');
+    window.location.href = '/';
+}
+
+function mostrarDashboard(usuario) {
+	cargarMisProyectos();
+    document.getElementById('authCard').style.display = 'none';
+    document.getElementById('dashboardContainer').style.display = 'block';
+    document.getElementById('userDisplay').textContent = usuario;
+    document.body.style.background = '#e2e8f0';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const sesionActiva = sessionStorage.getItem('sesion_ingeniero');
+    if (sesionActiva) {
+        mostrarDashboard(sesionActiva);
+    }
+});
+// Variable global para controlar qué proyecto tiene abierto el usuario en su pantalla
+let proyectoActivoId = null;
+
+/**
+ * 1. Carga los proyectos del usuario logueado desde el servidor
+ */
+async function cargarMisProyectos() {
+    const tabla = document.getElementById('tablaProyectos');
+    const cuerpo = document.getElementById('cuerpoTablaProyectos');
+    const mensaje = document.getElementById('listaProyectosMensaje');
+    
+    try {
+        // Petición segura a la API de Flask
+        const response = await fetch('/api/proyectos/listar');
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.proyectos.length > 0) {
+            cuerpo.innerHTML = ''; // Limpiar filas antiguas
+            
+data.proyectos.forEach(p => {
+    cuerpo.innerHTML += `
+        <tr style="border-bottom: 1px solid #edf2f7; transition: background 0.2s;">
+            <td style="padding: 14px 10px; font-weight: 600; color: #2d3748; font-size: 14px;">${p.nombre}</td>
+            <td style="padding: 14px 10px; color: #718096; font-size: 13px;">${p.fecha_creacion}</td>
+            <td style="padding: 14px 10px; text-align: right; display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" onclick="activarYTrabajarProyecto('${p.id_proyecto}', '${p.nombre.replace(/'/g, "\\'")}')" style="background-color: #3182ce; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                    👁️ Abrir
+                </button>
+                <button type="button" onclick="eliminarProyectoFlujo('${p.id_proyecto}', '${p.nombre.replace(/'/g, "\\'")}')" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s;">
+                    🗑️ Borrar
+                </button>
+            </td>
+        </tr>
+    `;
+});
+            
+            mensaje.style.display = 'none';
+            tabla.style.display = 'table';
+        } else {
+            // Si el JSON vino vacío
+            mensaje.innerHTML = `<span>📂</span><br><br>No tienes proyectos guardados en tu cuenta corporativa.<br>Haz clic en <strong>"Crear Proyecto Nuevo"</strong> arriba para empezar su diseño.`;
+            tabla.style.display = 'none';
+        }
+    } catch (error) {
+        console.error(error);
+        mensaje.textContent = "❌ Error crítico al conectar con el repositorio de proyectos.";
+    }
+}
+
+/**
+ * 2. Flujo para crear un proyecto nuevo mediante un prompt flotante
+ */
+async function crearNuevoProyectoFlujo() {
+    const nombre = prompt("Introduce el nombre identificativo de la nueva instalación (ej. Nave Industrial Inditex):");
+    if (!nombre || nombre.trim() === "") return; // Si cancela o introduce espacios vacíos, se detiene
+
+    try {
+        const response = await fetch('/api/proyectos/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre: nombre.trim() })
+        });
+        
+        const resultado = await response.json();
+        
+        if (resultado.status === 'success') {
+            alert("✅ Proyecto inicializado correctamente en el servidor.");
+            // Refrescamos automáticamente la tabla para que aparezca el nuevo
+            await cargarMisProyectos();
+            // Lo abrimos directamente para trabajar en él
+            activarYTrabajarProyecto(resultado.id_proyecto, nombre.trim());
+        } else {
+            alert("Error: " + resultado.message);
+        }
+    } catch (error) {
+        alert("Error de red al intentar crear el proyecto.");
+    }
+}
+
+/**
+ * 3. Selecciona el proyecto y prepara la interfaz para trabajar en él
+ */
+function activarYTrabajarProyecto(idProyecto, nombreProyecto) {
+    proyectoActivoId = idProyecto;
+    
+    // Guardamos la ID temporalmente en el navegador para recordarla si cambia de pestaña (Cálculos, MTD, etc)
+    localStorage.setItem('proyecto_activo_id', idProyecto);
+    localStorage.setItem('proyecto_activo_nombre', nombreProyecto);
+    
+    alert(`📂 Proyecto Activo establecido:\n"${nombreProyecto}"\n\nYa puedes rellenar el Cuadro Eléctrico y usar el menú superior.`);
+    
+    // OPCIONAL: Aquí puedes hacer que se muestren las tablas del cuadro eléctrico 
+    // o que cambie algún texto del título para avisar qué proyecto está abierto.
+};
+/**
+ * Flujo seguro para eliminar un proyecto confirmando con el usuario
+ */
+async function eliminarProyectoFlujo(idProyecto, nombreProyecto) {
+    const confirmar = confirm(`⚠️ ¿Estás completamente seguro de que deseas eliminar el proyecto:\n"${nombreProyecto}"?\n\nEsta acción borrará todos sus cálculos y memorias de forma permanente.`);
+    if (!confirmar) return;
+
+    try {
+        const response = await fetch(`/api/proyectos/eliminar/${idProyecto}`, {
+            method: 'DELETE'
+        });
+        
+        const resultado = await response.json();
+        
+        if (resultado.status === 'success') {
+            alert("🗑️ Proyecto eliminado con éxito de los servidores.");
+            
+            // Si el proyecto borrado era el que teníamos "activo", limpiamos la memoria
+            if (localStorage.getItem('proyecto_activo_id') === idProyecto) {
+                localStorage.removeItem('proyecto_activo_id');
+                localStorage.removeItem('proyecto_activo_nombre');
+            }
+            
+            // Refrescamos la tabla al instante
+            cargarMisProyectos();
+        } else {
+            alert("Error: " + resultado.message);
+        }
+    } catch (error) {
+        alert("Error de conexión al intentar eliminar el proyecto.");
+    }
+}
+    </script>
+</body>
+</html>

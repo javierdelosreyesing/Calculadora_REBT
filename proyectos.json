@@ -1,0 +1,287 @@
+{
+    "proyectos": [
+        {
+            "id_proyecto": "proy_1781354625",
+            "creador": "Javier",
+            "nombre": "RESTAURANTE/BAR",
+            "fecha_creacion": "13/06/2026 14:43",
+            "datos_cuadro": {
+                "circuitos": [
+                    {
+                        "circuito": "C1 - ILUMINACIÓN GENERAL (BAR Y COMEDOR)",
+                        "potencia": "2300",
+                        "longitud": "20",
+                        "red": "Monofásico",
+                        "ib": "10",
+                        "pia": "10",
+                        "seccion": "1.5",
+                        "iz": "15",
+                        "canalizacion": "16",
+                        "delta_u": "2.39"
+                    },
+                    {
+                        "circuito": "C2 - TOMAS DE CORRIENTE GENERALES (ZONA COMEDOR)",
+                        "potencia": "3450",
+                        "longitud": "20",
+                        "red": "Monofásico",
+                        "ib": "15",
+                        "pia": "16",
+                        "seccion": "2.5",
+                        "iz": "21",
+                        "canalizacion": "20",
+                        "delta_u": "2.14"
+                    },
+                    {
+                        "circuito": "C3 - TOMAS DE CORRIENTE AUXILIARES (ZONA BARRA)",
+                        "potencia": "3450",
+                        "longitud": "15",
+                        "red": "Monofásico",
+                        "ib": "15",
+                        "pia": "16",
+                        "seccion": "2.5",
+                        "iz": "21",
+                        "canalizacion": "20",
+                        "delta_u": "1.61"
+                    },
+                    {
+                        "circuito": "C4 - FREIDORA INDUSTRIAL 1 (COCINA)",
+                        "potencia": "4500",
+                        "longitud": "18",
+                        "red": "Monofásico",
+                        "ib": "19.56",
+                        "pia": "25",
+                        "seccion": "6",
+                        "iz": "32",
+                        "canalizacion": "25",
+                        "delta_u": "1.02"
+                    },
+                    {
+                        "circuito": "C5 - FREIDORA INDUSTRIAL 2 (COCINA)",
+                        "potencia": "4500",
+                        "longitud": "18",
+                        "red": "Monofásico",
+                        "ib": "19.56",
+                        "pia": "25",
+                        "seccion": "6",
+                        "iz": "32",
+                        "canalizacion": "25",
+                        "delta_u": "1.02"
+                    },
+                    {
+                        "circuito": "C6 - FREIDORA INDUSTRIAL 3 (COCINA)",
+                        "potencia": "4500",
+                        "longitud": "18",
+                        "red": "Monofásico",
+                        "ib": "19.56",
+                        "pia": "25",
+                        "seccion": "6",
+                        "iz": "32",
+                        "canalizacion": "25",
+                        "delta_u": "1.02"
+                    },
+                    {
+                        "circuito": "C7 - CONGELADOR VERTICAL 1",
+                        "potencia": "1500",
+                        "longitud": "15",
+                        "red": "Monofásico",
+                        "ib": "6.52",
+                        "pia": "16",
+                        "seccion": "2.5",
+                        "iz": "21",
+                        "canalizacion": "20",
+                        "delta_u": "0.7"
+                    },
+                    {
+                        "circuito": "C8 - CONGELADOR VERTICAL 2",
+                        "potencia": "1500",
+                        "longitud": "15",
+                        "red": "Monofásico",
+                        "ib": "6.52",
+                        "pia": "16",
+                        "seccion": "2.5",
+                        "iz": "21",
+                        "canalizacion": "20",
+                        "delta_u": "0.7"
+                    },
+                    {
+                        "circuito": "C9 - LAVAVAJILLAS INDUSTRIAL (TRIFÁSICO CORRECCIÓN)",
+                        "potencia": "7500",
+                        "longitud": "12",
+                        "red": "Trifásico",
+                        "ib": "10.82",
+                        "pia": "16",
+                        "seccion": "2.5",
+                        "iz": "18",
+                        "canalizacion": "25",
+                        "delta_u": "0.38"
+                    }
+                ],
+                "ultima_modificacion": "2026-06-13T12:59:16.750Z"
+            },
+            "datos_memoria": {
+                "inputs": {
+                    "titular": "",
+                    "CIF": "",
+                    "emplazamiento": "",
+                    "Representante": "",
+                    "DNI": "",
+                    "edif_calle": "C/SIERRA DEL CADI, Nº12",
+                    "edif_catastro": "4017207VK4XXXXXXXX",
+                    "instalacion_tipo": "Nueva Instalación",
+                    "alimentacion_inicio": "a partir de la derivación individual desde el cuarto de contadores del edificio",
+                    "es_lpc": "no",
+                    "edif_actividad": "Restauración",
+                    "nueva_estancia_nombre": "Vestibulo",
+                    "txt_nuevo_servicio": "",
+                    "nueva_estancia_const": "",
+                    "nueva_estancia_util": "",
+                    "nueva_estancia_h": "3",
+                    "chk_terraza": true,
+                    "inst_potencia": "32",
+                    "tipo_fuente_socorro": "grupo",
+                    "regimen_neutro": "TT",
+                    "longitud_anillo": "40",
+                    "resistencia_tierra": "17",
+                    "entorno_humedad": "seco",
+                    "tiene_lga": "no",
+                    "enlace_seccion": "10",
+                    "enlace_proteccion": "40",
+                    "acometida_alcance": "si",
+                    "acometida_longitud": "15",
+                    "acometida_sistema": "trifasico",
+                    "seccion_di": "16",
+                    "diametro_tubo": "40",
+                    "calibre_iga": "50",
+                    "marca_aparamenta": "Schneider Electric",
+                    "exencion_diferencial": "si",
+                    "contadores_alcance": "no",
+                    "contadores_ubicacion": "Planta Baja",
+                    "contadores_ventilacion": "Natural directa al exterior",
+                    "contadores_puerta": "EI 60 (Apertura exterior)",
+                    "contadores_paredes": "EI 120",
+                    "contadores_extintor": true,
+                    "contadores_emergencia": true,
+                    "tipo_instalacion": "A1",
+                    "cable_servicio": "Circuito C5: Tomas de cocina y baño",
+                    "cable_tipo": "Cobre unipolar, H07Z1-K (AS)",
+                    "instalacion_luminarias": "fijas_superficie",
+                    "estudio_luminico": "no",
+                    "incluir_emergencia": "si",
+                    "tipo_emergencia": "autonomas",
+                    "material_cuadro": "metalico",
+                    "proteccion_ip": "IP44",
+                    "proteccion_sobretension": "ambas",
+                    "tipo_diferencial": "AC",
+                    "poder_corte": "6",
+                    "especiales_alcance": "no",
+                    "check_locales_humedos": true,
+                    "check_piscinas": true,
+                    "check_fuentes": false,
+                    "atex_alcance": "no",
+                    "check_atex_garaje": true,
+                    "campo_anonimo_59": "================================================================================\nANEXO OFICIAL: JUSTIFICACIÓN ATEX Y CUMPLIMIENTO REBT ITC-BT-29\n================================================================================\n\n1. OBJETO Y ALCANCE\nEl objeto del presente documento es realizar la clasificación de áreas con riesgo de incendio o explosión en el emplazamiento destinado a Aparcamiento / Garaje Subterráneo, determinando la posible extensión de atmósferas explosivas de acuerdo con las prescripciones de la ITC-BT-29 del Reglamento Electrotécnico de Baja Tensión (R.D. 842/2002) y siguiendo la metodología analítica de la norma UNE-EN 60079-10-1 vigente.\n\n2. NORMATIVA DE REFERENCIA APLICADA\n- Reglamento Electrotécnico de Baja Tensión (REBT) - Instrucción Técnica ITC-BT-29.\n- UNE-EN 60079-10-1: Clasificación de áreas. Atmósferas explosivas de gas.\n- Código Técnico de la Edificación (CTE) - Documento Básico DB-HS 3 (Calidad del aire interior).\n\n3. FICHA TÉCNICA DE LA SUSTANCIA DE RIESGO\n- Sustancia de referencia evaluada: Vapores de Gasolina / GLP (Mezclas de Hidrocarburos).\n- Límite Inferior de Explosividad (LIE): 44 g/m³ (1,4% en volumen).\n- Densidad relativa al aire: 3,5 (Vapores pesados con tendencia a la acumulación en cotas bajas).\n- Clase de Temperatura / Grupo de Gas: T3 / IIA.\n\n4. MODELADO CINEMÁTICO Y EVALUACIÓN DE LA VENTILACIÓN\n- Fuente de escape considerada: Secundaria (Pérdidas ocasionales o goteos por averías en vehículos).\n- Superficie útil del local: 300.0 m² | Altura libre: 3.0 m | Volumen neto: 899.9 m³.\n- Caudal mínimo exigido por Salubridad (CTE DB-HS 3): 8640 m³/h (Basado en 20 plazas).\n- Caudal de extracción real implantado en diseño: 8640 m³/h.\n- Tasa de renovación horaria alcanzada: 9.6 renovaciones/hora.\n- Tiempo de Permanencia / Persistencia de los gases (t_s): [ 12 min 60 s ].\n  *(Nota: El Anexo B de la norma UNE-EN 60079-10-1 establece que un tiempo de decaimiento inferior a 15-30 minutos ante un escape accidental avala la consideración de riesgo despreciable).*\n\n5. PLIEGO DE CONDICIONES OPERATIVAS EXIgiDAS (ITC-BT-29)\nPara la validez legal del presente dictamen, la instalación eléctrica y mecánica ejecutada en obra debe cumplir obligatoriamente con los siguientes preceptos técnicos:\nA) DISTRIBUCIÓN DE CAnALIZACIONES: Debido a que la densidad de los vapores es superior a la del aire, las rejillas de extracción están distribuidas garantizando que al menos el 50% del caudal de aire sea aspirado a ras de suelo (a menos de 0,5 metros del pavimento), suprimiendo bolsas estancas.\nB) REDUNDAnCIA MECÁnICA: La extracción consta de un sistema duplicado o dividido en líneas independientes con motores conmutables automáticamente, de modo que ante el fallo de un ventilador se mantenga el barrido de seguridad.\nC) ENCLAVAMIENTO DE SEGURIDAD: El arranque de los grupos mecánicos está supeditado automáticamente a una central de detección continua certificada (UNE 23300) que actúa ante presencia de Monóxido/Gas.\nD) CARACTERÍSTICAS EX: Los motores eléctricos integrados directamente en el flujo del aire extraído contarán con modo de protección y marcado oficial ATEX EPL Gc (Categoría 3G).\n\n6. DICTAMEN FINAL DE CLASIFICACIÓN VINCULANTE\n✓ CERTIFICACIÓN DE EMPLAZAMIENTO NO CLASIFICADO (ZONA SEgURA / EXENTO ATEX).\nMotivo: Se constata matemáticamente que la persistencia de gases inflamables ante una fuga es despreciable (12 min 60 s) gracias a la alta renovación forzada instalada. Al haberse verificado positivamente todos los enclavamientos, barridos homogéneos y sistemas de redundancia de motores impuestos por la ITC-BT-29, el garaje se declara legalmente como ZONA SEgURA. Toda la aparellaje eléctrico general del parking queda exento de protección Ex (exceptuando el interior de los conductos de extracción).",
+                    "entorno_gas": "baja",
+                    "input-archivo-proyecto": ""
+                },
+                "estanciasProyecto": [
+                    {
+                        "idNombre": "Comedor",
+                        "nombre": "Zona Comedor / Mesas (Restauración)",
+                        "construida": "30.00",
+                        "util": "30.00",
+                        "altura": "3.00"
+                    },
+                    {
+                        "idNombre": "Zona Barra",
+                        "nombre": "Zona Barra / Público de pie (Restauración)",
+                        "construida": "10.00",
+                        "util": "10.00",
+                        "altura": "3.00"
+                    },
+                    {
+                        "idNombre": "Vestuario",
+                        "nombre": "Vestuarios de personal",
+                        "construida": "3.00",
+                        "util": "3.00",
+                        "altura": "3.00"
+                    },
+                    {
+                        "idNombre": "Almacén",
+                        "nombre": "Almacén general",
+                        "construida": "5.00",
+                        "util": "5.00",
+                        "altura": "3.00"
+                    },
+                    {
+                        "idNombre": "Vestibulo",
+                        "nombre": "Vestíbulos generales / Zonas de espera",
+                        "construida": "10.00",
+                        "util": "10.00",
+                        "altura": "3.00"
+                    }
+                ],
+                "cablesProyecto": [
+                    {
+                        "servicio": "Derivación Individual (DI)",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C10: Sistema de Climatización / Aire Acondicionado",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito de Fuerza Motriz y Maquinaria",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito de Sistemas de Ventilación y Extracción",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito de Alumbrado de Emergencia",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C2: Tomas de corriente generales",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C1: Alumbrado general",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C4: Lavadora, lavavajillas y termo",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C3: Alimentación de cocina y horno",
+                        "tipo": "Cobre unipolar, RZ1-K (AS)"
+                    },
+                    {
+                        "servicio": "Circuito C5: Tomas de cocina y baño",
+                        "tipo": "Cobre unipolar, H07Z1-K (AS)"
+                    }
+                ],
+                "listaLuminarias": []
+            },
+            "datos_seguridad": {},
+            "datos_tierra": {},
+            "datos_atex": {},
+            "datos_cortocircuito": {},
+            "datos_unifilar": {}
+        },
+        {
+            "id_proyecto": "proy_1781367344",
+            "creador": "Javier",
+            "nombre": "ZONA COMERCIAL",
+            "fecha_creacion": "13/06/2026 18:15",
+            "datos_cuadro": {},
+            "datos_memoria": {},
+            "datos_seguridad": {},
+            "datos_tierra": {},
+            "datos_atex": {},
+            "datos_cortocircuito": {},
+            "datos_unifilar": {}
+        }
+    ]
+}

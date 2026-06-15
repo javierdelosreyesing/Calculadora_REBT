@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+# Instalar dependencias del sistema requeridas para WeasyPrint (Generación de PDFs)
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-cffi \
+    python3-brotli \
+    libpango-1.0-0 \
+    libharfbuzz0b \
+    libpangoft2-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    shared-mime-info \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Render asigna el puerto dinámicamente mediante la variable PORT
+EXPOSE 10000
+
+CMD ["python", "app.py"]

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio Básico de Seguridad y Salud - REBT</title>
+    <style>
+        /* ==========================================================================
+            VARIABLES DE DISEÑO CORPORATIVO (Ingeniería Eléctrica)
+           ========================================================================== */
+        :root {
+            --primary-color: #0f2537;       /* Azul profundo MTD */
+            --secondary-color: #e67e22;     /* Naranja de seguridad industrial */
+            --success-color: #16a085;       /* Verde técnico */
+            --background-color: #f1f5f9;    /* Gris neutro */
+            --card-background: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .contenedor-principal {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 25px;
+            max-width: 1700px;
+            margin: 0 auto;
+        }
+
+        /* Panel Izquierdo: Formulario de Configuración */
+        .panel-config {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid #e2e8f0;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 8px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+            padding-bottom: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .checkbox-list {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .checkbox-list label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-group {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-save { background-color: var(--success-color); }
+        .btn-save:hover { background-color: #117a65; }
+        .btn-download { background-color: var(--primary-color); }
+        .btn-download:hover { background-color: #1c3d5a; }
+
+        /* Panel Derecho: Hoja de Previsualización Dinámica (Formato BOE / Colegios) */
+        .panel-preview {
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #bdc3c7;
+            border-radius: 2px;
+            padding: 60px 80px;
+            box-sizing: border-box;
+            line-height: 1.6;
+            color: #000000;
+            font-size: 14px;
+            text-align: justify;
+        }
+
+        .preview-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+        }
+
+        .preview-header h1 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .preview-header p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        h3.doc-section {
+            font-size: 14px;
+            color: var(--primary-color);
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .variable {
+            font-weight: bold;
+            color: #000000;
+            border-bottom: 1px dashed var(--secondary-color);
+        }
+    </style>
+
+</head>
+<body>
+
+<header style="background: linear-gradient(135deg, #0f2537 0%, #1e3a5f 100%); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; border-bottom: 3px solid #16a085; width: 100%;">
+    
+    <div style="background-color: rgba(0, 0, 0, 0.3); padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+        
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">👷</span>
+            <span style="opacity: 0.85; font-weight: 500;">Ingeniero Activo:</span> 
+            <strong style="color: #1abc9c; font-weight: 600; background-color: rgba(26, 188, 156, 0.1); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;">{{ usuario }}</strong>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" onclick="window.location.href='/'" style="background-color: #34495e; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span>🏠</span> Volver al Panel
+            </button>
+            <button type="button" onclick="ejecutarLogoutPro()" style="background-color: #e74c3c; color: white; border: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                Cerrar Sesión
+            </button>
+        </div>
+
+    </div>
+
+    <div style="padding: 30px 24px 0 24px; text-align: center;">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Módulo de Seguridad y Salud - REBT</h1>
+        <p style="margin: 6px 0 24px 0; color: #a0aec0; font-size: 14px; opacity: 0.9;">Estudio preventivo y gestión de riesgos en instalaciones de baja tensión</p>
+        
+        <nav class="nav-tabs-container" style="display: flex; gap: 8px; justify-content: center; margin: 0; padding-bottom: 12px;">
+            
+            <a href="/configurador" class="nav-tab-btn" style="text-decoration: none; color: #a0aec0; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; background-color: rgba(255,255,255,0.05);">
+                <span>📄</span> Memoria Técnica (MTD)
+            </a>
+
+            <a href="/calculos" class="nav-tab-btn" style="text-decoration: none; color: #a0aec0; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; background-color: rgba(255,255,255,0.05);">
+                <span>📊</span> Cálculos Avanzados
+            </a>
+            
+            <a href="/seguridad_salud" class="nav-tab-btn active" style="text-decoration: none; color: white; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; background-color: #16a085; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span>🦺</span> Seguridad y Salud
+            </a>
+
+        </nav>
+    </div>
+
+</header>
+
+<div class="container" style="padding: 24px; margin-top: 15px; box-sizing: border-box;">
+
+<div class="container" style="padding: 24px; margin-top: 15px; box-sizing: border-box;">
+<body>
+
+<div class="contenedor-principal">
+    
+    <div class="panel-config" id="formConfigurador">
+        <h2>🛡️ Editor de Seguridad</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: -5px;">Generador basado en el RD 1627/1997.</p>
+
+        <div class="section-title">Datos del Proyecto</div>
+        <div class="form-group">
+            <label for="ss_expediente">Nº Expediente / Referencia:</label>
+            <input type="text" id="ss_expediente" placeholder="Ej: EXP-2026-REBT">
+        </div>
+        <div class="form-group">
+            <label for="ss_obra">Denominación de la Obra:</label>
+            <input type="text" id="ss_obra" placeholder="Ej: Reforma Instalación Eléctrica de Baja Tensión">
+        </div>
+
+        <div class="section-title">Parámetros de Estimación</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="ss_plazo">Plazo Estimado:</label>
+                <input type="text" id="ss_plazo" placeholder="Ej: 2 meses">
+            </div>
+            <div class="form-group">
+                <label for="ss_trabajadores">Nº Trabajadores:</label>
+                <input type="number" id="ss_trabajadores" placeholder="Ej: 2">
+            </div>
+        </div>
+
+        <div class="section-title">Fases de Obra y Riesgos</div>
+        <div class="form-group">
+            <label>Seleccione los riesgos presentes en la fase eléctrica:</label>
+            <div class="checkbox-list">
+                <label><input type="checkbox" id="r_contacto" checked> Contactos eléctricos directos e indirectos</label>
+                <label><input type="checkbox" id="r_caidas_distinto" checked> Caídas de personas a distinto nivel</label>
+                <label><input type="checkbox" id="r_caidas_mismo" checked> Caídas de personas al mismo nivel</label>
+                <label><input type="checkbox" id="r_quemaduras" checked> Quemaduras físicas y químicas / Arcos</label>
+                <label><input type="checkbox" id="r_objetos" checked> Caída de objetos en manipulación o desprendimientos</label>
+                <label><input type="checkbox" id="r_cortes" checked> Golpes y cortes con maquinaria y objetos</label>
+                <label><input type="checkbox" id="r_sobreesfuerzos" checked> Sobreesfuerzos y posturas forzadas</label>
+                <label><input type="checkbox" id="r_ruido" checked> Exposición a ruido ambiental</label>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-save" onclick="guardarSeguridad()">💾 Guardar Cambios (Local)</button>
+            <button type="button" class="btn btn-download" onclick="descargarSeguridadDoc()">📥 Descargar EBSS Oficial (.doc)</button>
+        </div>
+    </div>
+
+<div class="panel-preview" id="folioPreview">
+    <div class="preview-header">
+        <h1>ESTUDIO BÁSICO DE SEGURIDAD Y SALUD</h1>
+        <p>REFORMA DE INFRAESTRUCTURA ELÉCTRICA EN BAJA TENSIÓN</p>
+        <p style="font-size:11px; margin-top:5px;">Referencia/Expediente: <span id="p_expediente" class="variable">---</span></p>
+    </div>
+
+    <h3 class="doc-section">1. OBJETO Y DATOS GENERALES</h3>
+    <p>El presente documento constituye el <strong>Estudio Básico de Seguridad y Salud (EBSS)</strong> redactado en estricto cumplimiento del <strong>Real Decreto 1627/1997</strong>, de 24 de octubre, por el que se establecen disposiciones mínimas de seguridad y de salud en las obras de construcción.</p>
+    <p>El objeto del presente es precisar las medidas de prevención, protección técnica y correctivas aplicables durante la ejecución de los trabajos de: <span id="p_obra" class="variable">---</span>.</p>
+
+    <p><strong>Estimación de parámetros del proyecto:</strong></p>
+    <ul>
+        <li><strong>Plazo de ejecución estimado:</strong> El plazo de ejecución será definido de forma definitiva una vez sea adjudicado el proyecto, estimándose inicialmente una duración de <span id="p_plazo" class="variable">---</span>.</li>
+        <li><strong>Número de trabajadores:</strong> Durante la ejecución de la reforma se estima la presencia simultánea o sucesiva en la obra de un promedio de <span id="p_trabajadores" class="variable">---</span> trabajadores.</li>
+    </ul>
+
+    <h3 class="doc-section">2. RELACIÓN RESUMIDA DE LOS TRABAJOS A REALIZAR</h3>
+    <p>Mediante el seguimiento del proyecto técnico realizado, se pretende ejecutar de forma segura la reforma e implantación de la instalación de Baja Tensión del edificio, contemplando canalizaciones, tendido de conductores, montaje de cuadros generales, subcuadros de distribución, mecanismos, luminarias y la correspondiente conexión a los sistemas de puesta a tierra.</p>
+
+    <h3 class="doc-section">3. FASES DE OBRA CON IDENTIFICACIÓN DE RIESGOS</h3>
+    <p>Durante la ejecución de las fases operativas de la obra mecánica y eléctrica, se ha determinado la existencia de los siguientes riesgos específicos:</p>
+    <ul id="p_lista_riesgos">
+        </ul>
+
+    <h3 class="doc-section">4. DISPOSICIONES MÍNIMAS DE SEGURIDAD Y SALUD</h3>
+    <p>Las obligaciones previstas en las tres partes del <strong>Anexo IV del Real Decreto 1627/1997</strong> se aplicarán rigurosamente siempre que lo exijan las características de la actividad o cualquier riesgo detectado. Se destacan las siguientes pautas operativas:</p>
+    <ul>
+        <li><strong>Cinco Reglas de Oro (RD 614/2001):</strong> Queda prohibido todo trabajo en tensión. Se realizará corte efectivo, enclavamiento, verificación de ausencia de tensión, puesta a tierra y cortocircuito, y señalización de la zona de trabajo.</li>
+        <li><strong>Equipos de Protección Individual (EPIs):</strong> Todo el personal dispondrá de casco de protección contra impactos (policarbonato), calzado de seguridad con aislamiento dieléctrico, guantes de protección contra riesgos mecánicos y eléctricos (clase adecuada a la tensión) y gafas de protección contra impactos y arcos eléctricos.</li>
+        <li><strong>Protecciones Colectivas:</strong> Delimitación de las zonas de trabajo mediante vallas y cintas de señalización, alfombras aislantes frente a los cuadros eléctricos durante las fases de pruebas y andamios de servicio estables con barandillas perimetrales completas.</li>
+    </ul>
+
+    <h3 class="doc-section">5. MEDIDAS DE PREVENCIÓN DE LOS RIESGOS: PROTECCIONES COLECTIVAS</h3>
+    <p>El <strong>Real Decreto 485/1997</strong> del 14 de abril establece las disposiciones mínimas de carácter general relativas a la señalización de seguridad y salud en el trabajo, con el objetivo de llamar la atención sobre riesgos, alertar ante emergencias, facilitar la localización de medios de protección y guiar maniobras peligrosas.</p>
+    
+    <p><strong>Señalización en forma de panel:</strong></p>
+    <ul>
+        <li><strong>Señales de advertencia:</strong> Forma Triangular, Fondo Amarillo, Color de Contraste Negro.</li>
+        <li><strong>Señales de prohibición:</strong> Forma Redonda, Color de fondo Rojo, Color de Símbolo Negro.</li>
+        <li><strong>Señales de obligación:</strong> Forma Redonda, Color de fondo Azul, Color de símbolo Blanco.</li>
+        <li><strong>Señales de lucha contra incendios:</strong> Forma Rectangular o cuadrada, Color de fondo Rojo, Color de símbolo Blanco.</li>
+        <li><strong>Señales de salvamento o socorro:</strong> Forma Rectangular o cuadrada, Color de fondo Verde, Color de símbolo Blanco.</li>
+    </ul>
+
+    <p><strong>Cintas de delimitación y señalización:</strong></p>
+    <ul>
+        <li><strong>Cinta de señalización (Obstáculos y caídas):</strong> Para obstáculos, zonas de caída de objetos o personas a distinto nivel, se delimitará con cintas de plástico o tela con franjas alternadas oblicuas en color <strong>amarillo y negro</strong> inclinadas 45º.</li>
+        <li><strong>Cinta de delimitación de zona de trabajo:</strong> Las zonas de trabajo efectivo se delimitarán perimetralmente con cintas de franjas alternas verticales de colores <strong>blanco y rojo</strong>.</li>
+    </ul>
+
+    <p><strong>Requisitos obligatorios de iluminación (Tabla 1):</strong></p>
+    <table style="width:100%; border-collapse: collapse; margin: 15px 0; font-size: 13px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ccc; text-align: left;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Zonas de Trabajo</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Nivel mínimo de iluminación (lux)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Baja exigencia visual</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">100</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Exigencia visual moderada</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">200</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Exigencia visual alta</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">500</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Exigencia visual muy alta</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">1000</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Áreas o locales de uso ocasional</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">25</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Áreas o locales de uso habitual</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">100</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Vías de circulación</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">25</td></tr>
+            <tr><td style="padding: 6px; border: 1px solid #ddd;">Vías de circulación de uso habitual</td><td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">50</td></tr>
+        </tbody>
+    </table>
+
+    <p>Se deberá <strong>duplicar el nivel de iluminación</strong> en vías de circulación con riesgos apreciables de caídas o choques, y en zonas donde un error de apreciación visual suponga un peligro directo para el trabajador. La iluminación portátil será estrictamente de <strong>24V</strong>, quedando prohibido el uso de iluminación mediante llama.</p>
+
+    <h3 class="doc-section">6. PROTECCIONES COLECTIVAS PARTICULARES POR FASE DE OBRA</h3>
+    <p><strong>Fase 1: Instalaciones Eléctricas de Baja Tensión</strong></p>
+    <ul>
+        <li>Protección contra caídas de altura de personas u objetos.</li>
+        <li>Uso obligatorio de cuerdas de retenida y sirgas.</li>
+        <li>Mantenimiento riguroso del orden y limpieza en accesos y zonas de paso.</li>
+        <li>Inspección previa de eslingas de cadena y eslingas de cable antes de cada elevación o tendido.</li>
+    </ul>
+    
+    <p><strong>Fase 2: Instalaciones Eléctricas en Edificios y Locales</strong></p>
+    <ul>
+        <li>Protección contra caídas de altura de personas u objetos mediante barandillas y redes estructurales.</li>
+        <li>Garantía de orden y limpieza constante en pasillos, accesos y zonas de paso de cableado para evitar tropiezos a mismo nivel.</li>
+    </ul>
+
+    <h3 class="doc-section">7. EQUIPOS DE PROTECCIÓN INDIVIDUAL (EPI) POR RIESGO ASOCIADO</h3>
+    <ul>
+        <li><strong>Afecciones en la piel por contacto / Quemaduras:</strong> Guantes de protección frente a abrasión, frente a agentes químicos y frente a calor.</li>
+        <li><strong>Proyecciones de objetos, fragmentos y ambiente polvoriento:</strong> Calzado con protección contra golpes mecánicos, casco de seguridad mecánica, gafas de seguridad de uso básico, pantalla facial y equipos de protección de las vías respiratorias (mascarilla).</li>
+        <li><strong>Aplastamientos, atrapamientos y caída de objetos:</strong> Calzado con protección contra golpes mecánicos, casco protector de seguridad y uso de bolsa portaherramientas técnica.</li>
+        <li><strong>Caídas de personas a distinto / mismo nivel:</strong> Cinturón de seguridad anticaídas integrado, bolsa portaherramientas y calzado de protección (sin suela antiperforante para uso básico en superficies limpias).</li>
+        <li><strong>Contactos eléctricos directos:</strong> Calzado con protección contra descargas eléctricas (dieléctrico), casco protector de la cabeza contra riesgos eléctricos, gafas de seguridad contra arco eléctrico y guantes dieléctricos certificados.</li>
+        <li><strong>Cuerpos extraños en los ojos / Desprendimientos:</strong> Gafas de seguridad básicas, pantalla facial y casco protector de la cabeza contra riesgos mecánicos.</li>
+        <li><strong>Exposición a fuentes luminosas peligrosas (Soldadura / Oxicorte):</strong> Gafas de oxicorte, gafas contra arco eléctrico, gafas contra radiaciones, mandil de cuero, manguitos, pantalla facial con visor oscuro, pantalla para soldador oxicorte y polainas de soldador cubre-calzado.</li>
+        <li><strong>Golpe por rotura de cable / Golpes y cortes:</strong> Casco protector mecánico, gafas de seguridad para uso básico, pantalla facial, bolsa portaherramientas, chaleco reflectante para señalización y guantes frente a abrasión.</li>
+        <li><strong>Pisada sobre objetos punzantes:</strong> Calzado de protección con suela anti perforante de acero o composite.</li>
+        <li><strong>Sobreesfuerzos y Ruido:</strong> Cinturón de protección lumbar y protectores auditivos de atenuación según los decibelios de la maquinaria empleada.</li>
+    </ul>
+
+    <h3 class="doc-section">8. DERECHOS DE LOS TRABAJADORES Y SEGUIMIENTO</h3>
+    <p>Los contratistas y subcontratistas garantizarán que los trabajadores reciban una información adecuada y comprensible de todas las medidas preventivas. Una copia de este plan o del Plan de Seguridad y Salud de la contrata será facilitada por el contratista a los representantes de los trabajadores en el centro de trabajo.</p>
+    <p>Cualquier incumplimiento observado facultará al Técnico Coordinador para disponer la paralización inmediata de los tajos o de la totalidad de la obra en caso de riesgo grave e inminente.</p>
+	<h3 class="doc-section">9. NORMATIVA PARA APLICAR EN LAS FASES DEL ESTUDIO</h3>
+    <p>Según el <strong>R.D. 1627/1997</strong> de 24 de octubre, la realización de este Estudio de Seguridad y Salud contiene la descripción de los riesgos laborales que puedan ser evitados, indicando a tal efecto las medidas preventivas adecuadas. Para aquellos otros riesgos que no han podido evitarse conforme a lo señalado anteriormente, se especifican las protecciones técnicas tendentes a reducirlos y las medidas preventivas que los controlen.</p>
+    <p>En el desarrollo de los trabajos se ha tenido en cuenta la tipología y características de los materiales y elementos que vayan a ser utilizados, así como el proceso constructivo definitivo y el orden secuencial en el que se van a realizar las distintas actividades, tal y como se manifiesta en el proyecto de obra al que acompaña este documento.</p>
+    <p>Sobre la base de lo establecido en este estudio, la empresa adjudicataria elaborará el correspondiente <strong>Plan de Seguridad y Salud</strong> en el que se analicen, estudien, desarrollen y complementen las previsiones aquí contenidas, en función de sus propios sistemas de ejecución de la obra o la realización de las instalaciones. En este plan se recogerán las propuestas de medidas de prevención que el contratista considere convenientes, siempre y cuando se justifiquen de forma correcta y no disminuyan los niveles de protección previstos. Dicho plan deberá ser aprobado, en cualquier caso, por el <strong>Coordinador de Seguridad y Salud</strong> antes del inicio de los trabajos.</p>
+
+    <p><strong>Comprobaciones críticas a pie de obra por la dirección técnico/preventiva:</strong></p>
+    <ul>
+        <li>Revisión exhaustiva de los planos de la obra o proyecto de instalaciones.</li>
+        <li>Operaciones de replanteo previas a la ejecución de zanjas o fijaciones.</li>
+        <li>Verificación de maquinaria y herramientas adecuadas para los trabajos eléctricos y mecánicos.</li>
+        <li>Inspección de medios de transporte e izado adecuados al proyecto.</li>
+        <li>Control de elementos auxiliares precisos (andamios, escaleras de mano).</li>
+        <li>Supervisión de materiales y fuentes de energía provisionales a utilizar.</li>
+        <li>Despliegue de las protecciones colectivas necesarias.</li>
+    </ul>
+
+    <p><strong>Alternativas organizativas ponderadas en la actividad:</strong></p>
+    <ul>
+        <li><strong>Normalización y repetitividad:</strong> Mantener la repetitividad de los trabajos para racionalizarlos, haciéndolos más seguros y amortizables, persiguiendo reducir las adaptaciones artesanales y las manipulaciones innecesarias en obra.</li>
+        <li><strong>Prefabricación / Trabajo en taller:</strong> Organizar los tajos con tendencia a la supresión de trabajos en obra que puedan realizarse previamente en un taller estructurado, eliminando así la exposición de los operarios a riesgos innecesarios.</li>
+        <li><strong>Itinerarios de avance y acopio:</strong> Establecer un itinerario claro para el avance de las líneas, así como para la retirada y acopio de la totalidad de los materiales empleados a la finalización de la jornada o de los trabajos.</li>
+        <li><strong>Inspección de la potencia provisional:</strong> Revisar todo lo relacionado con la instalación eléctrica provisional de obra, de forma que se compruebe que está instalada de acuerdo con la potencia requerida y en un estado óptimo de conservación.</li>
+        <li><strong>Cercado perimetral por caída de materiales:</strong> Cercar debidamente toda zona en la cual pueda existir peligro de caída de materiales y no se haya podido apantallar adecuadamente el recorrido vertical que puede realizar el objeto en su trayectoria.</li>
+    </ul>
+
+    <h3 class="doc-section">10. PRINCIPIOS GENERALES DE PREVENCIÓN (ART. 8 Y 10 R.D. 1627/1997)</h3>
+    <p>Como se indica en el artículo 8 del R.D. 1627/1997, los principios generales de prevención en materia de seguridad y salud que recoge el <strong>artículo 15 de la Ley de Prevención de Riesgos Laborales</strong> son tomados en consideración por el proyectista en las fases de concepción, estudio y elaboración del proyecto de obra y, en particular, al tomar las decisiones constructivas, técnicas y de organización con el fin de planificar los diferentes trabajos y estimar la duración prevista de los mismos, bajo la tutela del Coordinador en materia de seguridad y salud.</p>
+    <p>Asimismo, se prevé un estudio de acondicionamiento de las zonas de trabajo para planificar la colocación de plataformas, zonas de paso y formas de acceso seguro. El personal dispondrá en obra del equipo indispensable y necesario de protección individual con su correspondiente <strong>Certificado CE</strong>, ajustándose en todo momento a lo establecido en el <strong>R.D. 773/1997</strong> de 30 de mayo.</p>
+    <p>El personal recibirá la instrucción necesaria sobre el uso correcto de dichos equipos. Cita el artículo 10 del R.D. 1627/1997 la aplicación obligatoria de los principios de acción preventiva en las siguientes tareas específicas:</p>
+    
+    <ul>
+        <li>Mantenimiento de la obra en buen estado de orden y limpieza.</li>
+        <li>Elección del emplazamiento de los puestos y áreas de trabajo, teniendo en cuenta sus condiciones de acceso y la determinación de vías de paso y circulación.</li>
+        <li>La manipulación de los diferentes materiales y medios auxiliares.</li>
+        <li>El mantenimiento, el control previo a la puesta en servicio y el control periódico de las instalaciones y dispositivos necesarios con el objeto de corregir los defectos que pudieran afectar a la seguridad y salud de los trabajadores.</li>
+        <li>La delimitación y el acondicionamiento de las zonas de almacenamiento y depósito de los diferentes materiales, en particular los peligrosos.</li>
+        <li>La recogida de materiales peligrosos utilizados.</li>
+        <li>El almacenamiento y la eliminación de residuos y escombros.</li>
+        <li>La adaptación de los diferentes tiempos efectivos a dedicar a las distintas fases del trabajo.</li>
+        <li>La cooperación entre contratistas, subcontratistas y trabajadores autónomos.</li>
+        <li>Las interacciones o incompatibilidades con cualquier otro tipo de trabajo o actividad que se desarrolle de manera próxima.</li>
+    </ul>
+
+    <h3 class="doc-section">11. PROTOCOLO DE TRABAJOS EN ALTURA Y MANIPULACIÓN DE CARGAS</h3>
+    <p><strong>Criterios estrictos para trabajos en altura:</strong></p>
+    <p>En todo momento en el que un trabajador se encuentre realizando un trabajo a una <strong>altura superior a dos metros</strong> y no se disponga de protecciones colectivas adecuadas (como barandillas o redes), será obligatorio el uso de un cinturón de seguridad o arnés anticaídas homologado. Este irá firmemente amarrado a los puntos de anclaje previstos en el proyecto y en la planificación de los trabajos, los cuales <strong>nunca deberán ser improvisados</strong>. El operario deberá disponer, asimismo, de la formación e información correspondiente para trabajos en altura.</p>
+
+    <p><strong>Instrucciones obligatorias para la manipulación manual de cargas:</strong></p>
+    <p>En estricto cumplimiento de la normativa vigente sobre trastornos musculoesqueléticos, se seguirán las siguientes pautas de manejo técnico:</p>
+    <ul>
+        <li><strong>Límite de masa:</strong> No se manipularán cargas de un peso mayor a <strong>25 kg</strong> por un solo trabajador.</li>
+        <li><strong>Técnica de levantamiento:</strong> Al levantar la carga, se deberán flexionar las rodillas manteniendo la espalda erguida en todo momento, evitando posturas forzadas o flexiones de tronco.</li>
+        <li><strong>Sujeción:</strong> Se debe agarrar el objeto firmemente con las dos manos siempre que el tamaño del mismo lo permita.</li>
+        <li><strong>Transporte dinámico:</strong> Durante la marcha, la carga debe permanecer lo más cercana posible al cuerpo, evitando giros bruscos de la cintura bajo carga.</li>
+        <li><strong>Protocolo específico para cargas largas (por una sola persona):</strong>
+            <ul>
+                <li>Se llevará la carga inclinada por uno de sus extremos, elevándola progresivamente hasta la altura del hombro.</li>
+                <li>Se avanzará desplazando las manos a lo largo del objeto buscando de forma precisa el centro de gravedad de la carga.</li>
+                <li>Se colocará el objeto en perfecto equilibrio sobre el hombro del operario.</li>
+                <li>Durante su transporte, se mantendrá la carga inclinada de forma constante, garantizando que el extremo delantero permanezca siempre por encima de la altura de la cabeza.</li>
+                <li>Se comprobará previamente que el objeto no presente aristas afiladas o rebabas metálicas peligrosas; en caso de poseerlas, se procederá a cubrirlas o eliminarlas antes de iniciar el porte.</li>
+            </ul>
+        </li>
+    </ul>
+	<h3 class="doc-section">12. DISPOSICIONES MÍNIMAS DE SEGURIDAD Y SALUD EN LA OBRA</h3>
+    <p>El ámbito de aplicación de las normas técnico-preventivas enunciadas a continuación será de obligado cumplimiento en la <strong>totalidad de la superficie y dependencias de la obra</strong>, vinculando a todo el personal interviniente:</p>
+
+    <ul>
+        <li><strong>1. Estabilidad y solidez:</strong>
+            <ul>
+                <li>Se deberá asegurar de forma estricta la estabilidad de los materiales, acopios y equipos en general, así como de cualquier elemento que, ante un desplazamiento accidental, vuelco o rotura, pudiera afectar a la seguridad de los trabajadores.</li>
+                <li>El acceso a cualquier superficie que conste de materiales que no ofrezcan una resistencia estructural suficiente solo se autorizará en caso de que se proporcionen equipos de trabajo o medios auxiliares apropiados (pasarelas, líneas de vida) para que la actividad se realice de forma segura.</li>
+            </ul>
+        </li>
+
+        <li><strong>2. Instalaciones de suministro y reparto de energía:</strong>
+            <ul>
+                <li>La instalación eléctrica del lugar de trabajo en la obra deberá ajustarse rigurosamente a lo estipulado en el <strong>Reglamento Electrotécnico de Baja Tensión (REBT)</strong> y su normativa específica de aplicación.</li>
+                <li>Las instalaciones se deben proyectar, ejecutar y posteriormente utilizar de manera que no supongan ningún peligro de incendio o explosión, manteniendo siempre la máxima seguridad frente a posibles <strong>contactos directos o indirectos</strong> de las personas.</li>
+                <li>El diseño, la ejecución y la elección del material de los dispositivos de corte y protección deben tener en cuenta el tipo y la potencia nominal de la instalación, los factores ambientales externos y la cualificación técnica de las personas que puedan acceder a cada parte del circuito.</li>
+            </ul>
+        </li>
+
+        <li><strong>3. Vías y salidas de emergencia:</strong>
+            <ul>
+                <li>Las vías y salidas de emergencia deberán permanecer totalmente expeditas, libres de obstáculos, y desembocar lo más directamente posible en una zona de seguridad o punto de encuentro exterior.</li>
+                <li>En caso de peligro o situación de alarma, todos los lugares de trabajo deberán poder evacuarse rápidamente y en condiciones de máxima seguridad para los operarios.</li>
+                <li>El número, la distribución y las dimensiones de las vías y salidas de evacuación dependerán del uso de los equipos, las dimensiones de la obra, la tipología de los locales y el número máximo de personas que puedan estar presentes de forma simultánea.</li>
+                <li>Las vías y salidas específicas deberán señalizarse conforme a las directrices del <strong>R.D. 485/1997</strong>; esta señalización fijada en los lugares adecuados poseerá la resistencia y visibilidad suficiente.</li>
+                <li>Las vías de circulación y las puertas de acceso a las salidas de emergencia no deberán ser obstruidas por materiales, herramientas o cables para que puedan ser utilizadas sin dificultad en cualquier momento.</li>
+                <li>En caso de fallo del sistema de alumbrado general, las vías de evacuación dispondrán de un sistema de <strong>alumbrado de emergencia</strong> con la intensidad y autonomía suficiente para garantizar la visibilidad hacia el exterior.</li>
+            </ul>
+        </li>
+
+        <li><strong>4. Detección y actuación contra incendios:</strong>
+            <ul>
+                <li>En función de las características de la obra, las dimensiones y usos de los locales, los equipos presentes y el número máximo de personas expuestas, se dispondrá de un número suficiente de dispositivos de extinción contra incendios (extintores portátiles de polvo y CO2) y, si fuese preciso, de detectores y sistemas de alarma.</li>
+                <li>Los dispositivos de prevención de incendios deberán revisarse periódicamente, registrando de forma regular sus correspondientes operaciones de mantenimiento obligatorio.</li>
+                <li>Los dispositivos de extinción manuales (no automáticos) deben contar con una señalización normalizada visible, libre acceso y una ubicación que facilite una rápida manipulación en caso de conato.</li>
+            </ul>
+        </li>
+
+        <li><strong>5. Ventilación:</strong>
+            <ul>
+                <li>Teniendo en cuenta los métodos de trabajo empleados y las cargas físicas impuestas a los trabajadores, se garantizará la renovación y disponibilidad de aire limpio suficiente para mantener las condiciones de salud.</li>
+                <li>Si se utiliza una instalación de ventilación forzada o mecánica, se deberá mantener en un estado de conservación óptimo, programando los flujos de forma que nunca se exponga a los trabajadores a corrientes de aire nocivas.</li>
+            </ul>
+        </li>
+
+        <li><strong>6. Exposición a riesgos específicos:</strong>
+            <ul>
+                <li>Los operarios no estarán expuestos a fuertes niveles de ruido sin la debida atenuación, ni a factores externos ambientales nocivos (acumulación de polvo de rozas, humos o vapores).</li>
+                <li>En ningún caso podrá exponerse a un trabajador a una <strong>atmósfera confinada de alto riesgo</strong> (como arquetas, fosos o galerías sin ventilar). Cualquier acceso deberá estar controlado y supervisado de forma permanente desde el exterior de modo que, si sucediese un accidente, se obtenga un auxilio eficaz e inmediato.</li>
+            </ul>
+        </li>
+
+        <li><strong>7. Temperatura:</strong>
+            <ul>
+                <li>Se mantendrá una temperatura ambiental adecuada para los trabajadores durante el tiempo de trabajo, teniendo en cuenta la actividad metabólica que se está llevando a cabo y su carga física correspondiente, con especial atención al estrés térmico en trabajos exteriores.</li>
+            </ul>
+        </li>
+
+        <li><strong>8. Iluminación:</strong>
+            <ul>
+                <li>Los lugares de trabajo dispondrán, en la medida de lo posible, de suficiente iluminación natural, implementando una iluminación artificial adecuada cuando la luz natural sea insuficiente para garantizar la seguridad.</li>
+                <li>Las líneas y proyectores de las instalaciones de iluminación provisional de los locales y puestos de trabajo se colocarán de manera que no generen sombras cegadoras, deslumbramientos ni riesgos de accidente por caída de lámparas para los trabajadores.</li>
+            </ul>
+        </li>
+
+        <li><strong>9. Puertas y portones:</strong>
+            <ul>
+                <li>Las puertas y portones situados en los recorridos de emergencia deben estar señalizados de manera adecuada y su sistema de apertura permitirá el paso libre hacia el exterior sin requerir llaves ni mecanismos complejos de desbloqueo.</li>
+            </ul>
+        </li>
+
+        <li><strong>10. Primeros auxilios:</strong>
+            <ul>
+                <li>Será responsabilidad directa del contratista garantizar que los primeros auxilios puedan prestarse en todo momento por personal interno con la formación técnica suficiente para ello. Asimismo, se dispondrá del protocolo necesario para asegurar el traslado rápido del accidentado a fin de que reciba atención médica hospitalaria.</li>
+                <li>En todos los tajos en los que las condiciones de trabajo lo requieran, se dispondrá de un <strong>botiquín de primeros auxilios</strong> dotado de material reglamentario, manteniéndose señalizado, precintado y en un lugar de fácil acceso.</li>
+                <li>Se colocará una señalización claramente visible en donde se indique la dirección, la ruta más rápida y el número de teléfono del servicio de urgencias y centro médico de referencia asignado a la obra.</li>
+            </ul>
+        </li>
+
+        <li><strong>11. Otras disposiciones operativas:</strong>
+            <ul>
+                <li>Los accesos principales y todo el perímetro de la obra deberán señalizarse, vallarse y destacarse mediante balizamiento de manera que sean claramente visibles para operarios y personal ajeno a los trabajos.</li>
+                <li>Se garantizará el suministro de <strong>agua potable</strong> apta para el consumo de los trabajadores, tanto en los locales comunes como en las proximidades de los puestos de trabajo.</li>
+                <li>Los trabajadores dispondrán de instalaciones acondicionadas para poder comer y, en su caso, para preparar sus alimentos en perfectas condiciones de seguridad, higiene y salud.</li>
+            </ul>
+        </li>
+    </ul>
+	<h3 class="doc-section">13. LEGISLACIÓN, NORMATIVAS Y CONVENIOS DE APLICACIÓN</h3>
+    
+    <p><strong>Obligaciones legales del Promotor:</strong></p>
+    <ul>
+        <li>Antes del inicio de los trabajos, el promotor debe designar un <strong>Coordinador de Seguridad y Salud</strong> cuando en la ejecución de las obras intervenga más de una empresa, una empresa y trabajadores autónomos, o varios trabajadores autónomos entre sí.</li>
+        <li>La designación de este coordinador es un deber formal que en ningún caso exime de sus responsabilidades legales al promotor de la obra.</li>
+        <li>El promotor debe efectuar de forma obligatoria un <strong>Aviso Previo</strong> a la autoridad laboral competente antes del comienzo efectivo de las obras, siguiendo estrictamente el modelo y los datos regulados en el Anexo III del Real Decreto 1627/1997.</li>
+    </ul>
+
+    <p><strong>Coordinación en materia de Seguridad y Salud:</strong></p>
+    <p>La designación del Coordinador para la elaboración del proyecto y para la ejecución de la obra podrá recaer de forma legal en la misma persona física o técnica. El Coordinador en materia de seguridad y salud durante la ejecución de la obra deberá desarrollar obligatoriamente las siguientes funciones:</p>
+    <ul>
+        <li>Coordinar la aplicación práctica de los principios generales de prevención y seguridad.</li>
+        <li>Coordinar las actividades de la obra para garantizar que las empresas, subcontratas y personal actuante apliquen de manera coherente y responsable los principios de acción preventiva que se recogen en el <strong>Artículo 15 de la Ley de Prevención de Riesgos Laborales (LPRL)</strong> durante la ejecución de la obra, y en particular, en las actividades a que se refiere el Artículo 10 del Real Decreto 1627/1997.</li>
+        <li><strong>Aprobar el Plan de Seguridad y Salud</strong> elaborado por el contratista principal y, en su caso, las modificaciones o anexos técnicos introducidos en el mismo.</li>
+        <li>Organizar y supervisar la <strong>Coordinación de Actividades Empresariales (CAE)</strong> prevista en el Artículo 24 de la Ley de Prevención de Riesgos Laborales.</li>
+        <li>Coordinar las acciones y funciones de control de la aplicación correcta de los métodos de trabajo seguros.</li>
+        <li>Adoptar las medidas necesarias para garantizar que únicamente las personas autorizadas y con equipos de protección adecuados puedan acceder al recinto de la obra.</li>
+        <li><em>Nota organizativa:</em> La <strong>Dirección Facultativa</strong> asumirá de oficio estas funciones de coordinación cuando por la tipología de la contrata no fuera legalmente obligatoria la designación expresa de un Coordinador.</li>
+    </ul>
+
+    <p><strong>Plan de Seguridad y Salud en el Trabajo:</strong></p>
+    <p>Antes del inicio de la obra se deberá elaborar un Plan de Seguridad y Salud en el que se analicen, estudien, desarrollen y complementen las previsiones contenidas en este Estudio Básico, en función del sistema de ejecución propio y los medios auxiliares del contratista. En este documento se implementarán las propuestas de prevención del constructor siempre y cuando estas no disminuyan bajo ningún concepto el nivel de protección previsto en este Estudio Básico.</p>
+    <p>El Plan de Seguridad y Salud deberá estar <strong>formalmente aprobado antes del inicio de la obra</strong>. Podrá ser modificado por el contratista en función del proceso de ejecución, de la evolución propia de los trabajos y de las posibles incidencias o cambios técnicos, debiendo ser estas modificaciones autorizadas expresamente por el Coordinador.</p>
+
+    <h3 class="doc-section">14. OBLIGACIONES DE LOS AGENTES INTERVINIENTES EN OBRA</h3>
+    
+    <p><strong>Obligaciones de Contratistas y Subcontratas:</strong></p>
+    <p>El contratista principal y la totalidad de los subcontratistas vinculados estarán estrictamente obligados a:</p>
+    <ul>
+        <li>Aplicar los principios de acción preventiva del Artículo 15 de la LPRL, con especial atención a:
+            <ul>
+                <li>El mantenimiento de la obra en un correcto estado de orden y limpieza.</li>
+                <li>La elección del emplazamiento de los puestos y áreas de trabajo, considerando sus condiciones de acceso y la determinación de las vías o zonas de desplazamiento y circulación.</li>
+                <li>La manipulación de los distintos materiales y la utilización de los medios auxiliares autorizados.</li>
+                <li>El mantenimiento, el control previo a la puesta en servicio y el control periódico de las instalaciones y dispositivos necesarios para la ejecución de las obras, con el objeto de corregir de inmediato los defectos que pudieran afectar a la seguridad y salud.</li>
+                <li>La delimitación, vallado y acondicionamiento de las zonas de almacenamiento y depósito de materiales, en particular si se trata de materias peligrosas o inflamables.</li>
+                <li>El almacenamiento selectivo y la evacuación segura de residuos y escombros de obra.</li>
+                <li>La recogida y gestión de los materiales peligrosos utilizados.</li>
+                <li>La adaptación del período de tiempo efectivo que habrá de dedicarse a los distintos trabajos o fases de trabajo.</li>
+                <li>La cooperación preventiva entre todos los intervinientes en la obra.</li>
+                <li>El estudio de las interacciones o incompatibilidades con cualquier otro trabajo o actividad que se desarrolle de manera próxima.</li>
+            </ul>
+        </li>
+        <li>Cumplir y hacer cumplir rigurosamente a todo el personal a su cargo lo establecido en el Plan de Seguridad y Salud aprobado.</li>
+        <li>Cumplir la normativa vigente en materia de prevención de riesgos laborales, atendiendo a las obligaciones sobre coordinación de actividades empresariales del Artículo 24 de la LPRL y cumpliendo las disposiciones mínimas del Anexo IV del R.D. 1627/1997.</li>
+        <li>Informar y proporcionar de forma documentada las instrucciones adecuadas a los trabajadores autónomos sobre todas las medidas que hayan de adoptarse en lo que se refiera a su seguridad y salud.</li>
+        <li>Atender las indicaciones y cumplir las órdenes e instrucciones del Coordinador de Seguridad y Salud durante la ejecución de los tajos.</li>
+    </ul>
+    <p>Los contratistas serán los <strong>responsables directos de la ejecución correcta</strong> de las medidas preventivas fijadas en el Plan en lo relativo a las obligaciones que les correspondan directamente o, en su caso, a los trabajadores autónomos por ellos contratados. Además, responderán solidariamente de las consecuencias que se deriven del incumplimiento de las medidas previstas. Las responsabilidades del Coordinador, de la Dirección Facultativa y del Promotor no eximirán en ningún caso de sus responsabilidades a los contratistas y subcontratistas.</p>
+
+    <p><strong>Obligaciones de los Trabajadores Autónomos:</strong></p>
+    <p>Los trabajadores autónomos que participen en la obra están obligados por ley a:</p>
+    <ul>
+        <li>Aplicar los principios de la acción preventiva del Artículo 15 de la LPRL, particularmente en: el mantenimiento del orden y la limpieza, el almacenamiento y evacuación de residuos, la recogida de materiales peligrosos, la adaptación de los tiempos de trabajo, la cooperación interempresarial y la gestión de incompatibilidades con otras actividades próximas.</li>
+        <li>Cumplir las disposiciones mínimas de seguridad establecidas en el Anexo IV del Real Decreto 1627/1997.</li>
+        <li>Ajustar su actuación conforme a los deberes de coordinación de actividades empresariales previstos en el Artículo 24 de la LPRL, participando activamente en cualquier medida de actuación coordinada que se hubiera establecido en la obra.</li>
+        <li>Cumplir con las obligaciones de seguridad establecidas para los trabajadores en el <strong>Artículo 29, apartados 1 y 2 de la Ley de Prevención de Riesgos Laborales</strong>.</li>
+        <li>Utilizar únicamente maquinaria y equipos de trabajo que se ajusten estrictamente a lo dispuesto en el <strong>Real Decreto 1215/1997</strong>.</li>
+        <li>Elegir y utilizar equipos de protección individual (EPIs) homologados en los términos previstos en el Real Decreto 773/1997.</li>
+        <li>Atender las indicaciones y cumplir de forma inmediata las instrucciones del Coordinador de Seguridad y Salud, debiendo cumplir asimismo con todo lo establecido en el Plan de Seguridad de la obra.</li>
+    </ul>
+
+    <h3 class="doc-section">15. SEGUIMIENTO, LIBRO DE INCIDENCIAS Y PARALIZACIÓN</h3>
+    
+    <p><strong>Régimen del Libro de Incidencias:</strong></p>
+    <p>En el centro de trabajo existirá de forma obligatoria, con fines de control y seguimiento del Plan de Seguridad y Salud, un <strong>Libro de Incidencias</strong> que constará de hojas por duplicado y que será facilitado por el Colegio Profesional al que pertenezca el técnico de la Dirección Facultativa que haya aprobado el Plan de Seguridad y Salud.</p>
+    <p>Dicho libro deberá mantenerse siempre en la obra y permanecerá de forma física en poder del Coordinador de Seguridad y Salud. Tendrán acceso directo al libro para realizar las anotaciones oportunas:</p>
+    <ul>
+        <li>La Dirección Facultativa de la obra.</li>
+        <li>Los contratistas y subcontratistas habilitados.</li>
+        <li>Los trabajadores autónomos intervinientes.</li>
+        <li>Las personas con responsabilidades en materia de prevención de las empresas concurrentes.</li>
+        <li>Los representantes de los trabajadores (Delegados de Prevención).</li>
+        <li>Los técnicos especializados de las Administraciones Públicas competentes en materia de seguridad y salud laboral.</li>
+    </ul>
+    <p>Efectuada una anotación en el Libro de Incidencias, el Coordinador estará obligado por ley a remitir en el <strong>plazo improrrogable de veinticuatro horas</strong> una copia de dicha anotación a la Inspección de Trabajo y Seguridad Social de la provincia. Igualmente, notificará de forma inmediata dichas anotaciones al contratista afectado y a los representantes de los trabajadores en la obra.</p>
+
+    <p><strong>Régimen de Paralización de los Trabajos:</strong></p>
+    <p>Cuando el Coordinador, durante la ejecución de las obras, observase el incumplimiento de las medidas de seguridad y salud, advertirá formalmente al contratista y dejará constancia escrita de tal incumplimiento en el Libro de Incidencias.</p>
+    <p>El Coordinador queda plenamente facultado para, en circunstancias de <strong>riesgo grave e inminente</strong> para la seguridad y salud de los trabajadores, disponer la <strong>paralización inmediata</strong> de los tajos afectados o, en su caso, de la totalidad de la obra. Dará cuenta inmediata de este hecho, a los efectos oportunos, a la Inspección de Trabajo y Seguridad Social de la provincia, notificando simultáneamente la orden de paralización al contratista, a las subcontratas o autónomos afectados y a los representantes de los trabajadores.</p>
+	<p class="mt-4"><strong>Aplicación complementaria del Anexo IV:</strong></p>
+    <p>Las obligaciones previstas en las tres partes del <strong>Anexo IV del Real Decreto 1627/1997</strong>, por el que se establecen las disposiciones mínimas de seguridad y de salud en las obras de construcción, se aplicarán con carácter riguroso y obligatorio siempre que lo exijan las características de la obra o de la actividad, las circunstancias de los tajos o cualquier riesgo concurrente detectado durante el desarrollo de la reforma eléctrica.</p>
+</div>
+
+<div id="notificacion-guardado-flotante" style="position: fixed; bottom: 24px; right: 24px; background-color: var(--success-color); color: white; padding: 12px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(20px); opacity: 0; z-index: 9999; pointer-events: none;">
+    ✓ Datos de seguridad sincronizados y guardados en memoria local
+</div>
+
+<script>
+    // Helper seguro para capturar inputs
+    function safeGetVal(id, fallback = '---') {
+        const el = document.getElementById(id);
+        return el && el.value.trim() !== '' ? el.value : fallback;
+    }
+
+    // Actualiza la hoja/folio técnico en tiempo real
+    function actualizarPreviewSeguridad() {
+        document.getElementById('p_expediente').textContent = safeGetVal('ss_expediente');
+        document.getElementById('p_obra').textContent = safeGetVal('ss_obra');
+        document.getElementById('p_plazo').textContent = safeGetVal('ss_plazo');
+        document.getElementById('p_trabajadores').textContent = safeGetVal('ss_trabajadores');
+
+        // Construcción dinámica de la lista de riesgos del documento real
+        const listaRiesgos = document.getElementById('p_lista_riesgos');
+        let htmlRiesgos = '';
+
+        if (document.getElementById('r_contacto')?.checked) {
+            htmlRiesgos += '<li><strong>Contactos eléctricos directos e indirectos:</strong> En el conexionado de líneas, manipulación de embarrados o cajas de derivación.</li>';
+        }
+        if (document.getElementById('r_caidas_distinto')?.checked) {
+            htmlRiesgos += '<li><strong>Caídas de personas a distinto nivel:</strong> Durante el montaje de luminarias en techos, bandejas portacables superiores o canalizaciones aéreas mediante escaleras o andamios.</li>';
+        }
+        if (document.getElementById('r_caidas_mismo')?.checked) {
+            htmlRiesgos += '<li><strong>Caídas de personas al mismo nivel:</strong> Por tropiezos con herramientas, restos de cables conductores, rozas o acopio de materiales en el suelo.</li>';
+        }
+        if (document.getElementById('r_quemaduras')?.checked) {
+            htmlRiesgos += '<li><strong>Quemaduras físicas y químicas / Arcos eléctricos:</strong> Por cortocircuitos accidentales durante la fase de comprobación, medición y puesta en servicio de cuadros.</li>';
+        }
+        if (document.getElementById('r_objetos')?.checked) {
+            htmlRiesgos += '<li><strong>Caída de objetos en manipulación o desprendimientos:</strong> Desplome de herramientas desde escaleras, canalizaciones sueltas o fragmentos de bovedillas en perforaciones.</li>';
+        }
+        if (document.getElementById('r_cortes')?.checked) {
+            htmlRiesgos += '<li><strong>Golpes y cortes con maquinaria u objetos:</strong> Uso de radiales para rozas, pelacables, tijeras de electricista o taladros percutores.</li>';
+        }
+        if (document.getElementById('r_sobreesfuerzos')?.checked) {
+            htmlRiesgos += '<li><strong>Sobreesfuerzos y posturas forzadas:</strong> Tirada manual de grandes secciones de mangueras de cables a través de tubos, o manejo de cargas pesadas como grupos electrógenos o SAI.</li>';
+        }
+        if (document.getElementById('r_ruido')?.checked) {
+            htmlRiesgos += '<li><strong>Exposición a ruido ambiental:</strong> Uso continuado de maquinaria de perforación, rozadoras o martillos neumáticos en el entorno de la reforma.</li>';
+        }
+
+        listaRiesgos.innerHTML = htmlRiesgos || '<li>No se han seleccionado riesgos específicos para esta fase.</li>';
+    }
+
+    // Guarda en el almacenamiento local de forma independiente
+    function guardarSeguridad() {
+        const datos = {
+            ss_expediente: document.getElementById('ss_expediente').value,
+            ss_obra: document.getElementById('ss_obra').value,
+            ss_plazo: document.getElementById('ss_plazo').value,
+            ss_trabajadores: document.getElementById('ss_trabajadores').value,
+            r_contacto: document.getElementById('r_contacto').checked,
+            r_caidas_distinto: document.getElementById('r_caidas_distinto').checked,
+            r_caidas_mismo: document.getElementById('r_caidas_mismo').checked,
+            r_quemaduras: document.getElementById('r_quemaduras').checked,
+            r_objetos: document.getElementById('r_objetos').checked,
+            r_cortes: document.getElementById('r_cortes').checked,
+            r_sobreesfuerzos: document.getElementById('r_sobreesfuerzos').checked,
+            r_ruido: document.getElementById('r_ruido').checked
+        };
+
+        localStorage.setItem('mtd_rebt_seguridad_completo', JSON.stringify(datos));
+        
+        // Animación de la alerta
+        const alerta = document.getElementById('notificacion-guardado-flotante');
+        alerta.style.opacity = "1";
+        alerta.style.transform = "translateY(0)";
+        setTimeout(() => {
+            alerta.style.opacity = "0";
+            alerta.style.transform = "translateY(20px)";
+        }, 2000);
+    }
+
+    // Carga los datos almacenados al inicializar
+    function cargarSeguridad() {
+        const guardado = localStorage.getItem('mtd_rebt_seguridad_completo');
+        if (!guardado) {
+            actualizarPreviewSeguridad();
+            return;
+        }
+
+        const datos = JSON.parse(guardado);
+        document.getElementById('ss_expediente').value = datos.ss_expediente || '';
+        document.getElementById('ss_obra').value = datos.ss_obra || '';
+        document.getElementById('ss_plazo').value = datos.ss_plazo || '';
+        document.getElementById('ss_trabajadores').value = datos.ss_trabajadores || '';
+        
+        if (datos.r_contacto !== undefined) document.getElementById('r_contacto').checked = datos.r_contacto;
+        if (datos.r_caidas_distinto !== undefined) document.getElementById('r_caidas_distinto').checked = datos.r_caidas_distinto;
+        if (datos.r_caidas_mismo !== undefined) document.getElementById('r_caidas_mismo').checked = datos.r_caidas_mismo;
+        if (datos.r_quemaduras !== undefined) document.getElementById('r_quemaduras').checked = datos.r_quemaduras;
+        if (datos.r_objetos !== undefined) document.getElementById('r_objetos').checked = datos.r_objetos;
+        if (datos.r_cortes !== undefined) document.getElementById('r_cortes').checked = datos.r_cortes;
+        if (datos.r_sobreesfuerzos !== undefined) document.getElementById('r_sobreesfuerzos').checked = datos.r_sobreesfuerzos;
+        if (datos.r_ruido !== undefined) document.getElementById('r_ruido').checked = datos.r_ruido;
+
+        actualizarPreviewSeguridad();
+    }
+
+    // Exportación directa y limpia a Word desde el cliente (100% Frontend)
+    function descargarSeguridadDoc() {
+        const contenidoHTML = document.getElementById('folioPreview').innerHTML;
+        
+        // Estilos limpios y profesionales adaptados a Word (.doc)
+        const estilosWord = `
+            <style>
+                body { font-family: 'Arial', sans-serif; line-height: 1.6; font-size: 11pt; text-align: justify; }
+                h1 { text-align: center; font-size: 16pt; color: #0f2537; margin-bottom: 5pt; text-transform: uppercase; }
+                h3 { font-size: 12pt; color: #0f2537; margin-top: 22pt; border-bottom: 2px solid #e67e22; padding-bottom: 3pt; text-transform: uppercase; }
+                p { margin-bottom: 10pt; }
+                ul, ol { margin-left: 20pt; margin-bottom: 10pt; }
+                li { margin-bottom: 4pt; }
+                .variable { font-weight: bold; color: #000000; }
+            </style>
+        `;
+        
+        const documentoCompleto = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head><meta charset='utf-8'><title>EBSS REBT</title>${estilosWord}</head>
+            <body>${contenidoHTML}</body>
+            </html>
+        `;
+
+        const blob = new Blob(['\ufeff', documentoCompleto], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const refFile = safeGetVal('ss_expediente', 'EBSS_Seguridad').replace(/[^a-z0-9]/gi, '_');
+        
+        a.href = url;
+        a.download = `Estudio_Basico_Seguridad_${refFile}.doc`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Escuchadores de eventos automáticos (Actualización en tiempo real)
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarSeguridad();
+        
+        const form = document.getElementById('formConfigurador');
+        form.addEventListener('input', actualizarPreviewSeguridad);
+        form.addEventListener('change', actualizarPreviewSeguridad);
+    });
+	function ejecutarLogoutPro() {
+    // Llama a la API segura del servidor para romper la sesión
+    fetch('/api/logout', { method: 'POST' }).then(() => {
+        sessionStorage.removeItem('sesion_ingeniero');
+        window.location.href = '/';
+    });
+}
+</script>
+
+</body>
+</html>
