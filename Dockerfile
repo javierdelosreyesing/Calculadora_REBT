@@ -1,7 +1,12 @@
 FROM python:3.11-slim
 
-# Instalar dependencias del sistema requeridas para WeasyPrint (Generación de PDFs)
-RUN apt-get update && apt-get install -y \
+# 1. Forzar permisos de root y limpiar antes de actualizar
+USER root
+
+# 2. Instalar dependencias de WeasyPrint ignorando advertencias y limpiando caché
+RUN apt-get clean && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
     python3-pip \
     python3-cffi \
     python3-brotli \
@@ -17,9 +22,10 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+# 3. Asegurar que pip esté actualizado e instalar tus librerías
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Render asigna el puerto dinámicamente mediante la variable PORT
 EXPOSE 10000
 
 CMD ["python", "app.py"]
